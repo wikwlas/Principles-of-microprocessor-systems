@@ -1,0 +1,134 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	__vector_1
+  12               	__vector_1:
+  13               	.LFB0:
+  14               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include <avr/interrupt.h>
+   3:main.c        **** 
+   4:main.c        **** #define INT0_pin PD2
+   5:main.c        **** volatile uint8_t count = 0;
+   6:main.c        **** 
+   7:main.c        **** ISR (INT0_vect) {
+  15               		.loc 1 7 0
+  16               		.cfi_startproc
+  17 0000 1F92      		push r1
+  18               	.LCFI0:
+  19               		.cfi_def_cfa_offset 3
+  20               		.cfi_offset 1, -2
+  21 0002 0F92      		push r0
+  22               	.LCFI1:
+  23               		.cfi_def_cfa_offset 4
+  24               		.cfi_offset 0, -3
+  25 0004 0FB6      		in r0,__SREG__
+  26 0006 0F92      		push r0
+  27 0008 1124      		clr __zero_reg__
+  28 000a 8F93      		push r24
+  29               	.LCFI2:
+  30               		.cfi_def_cfa_offset 5
+  31               		.cfi_offset 24, -4
+  32               	/* prologue: Signal */
+  33               	/* frame size = 0 */
+  34               	/* stack size = 4 */
+  35               	.L__stack_usage = 4
+   8:main.c        **** 	count ++;
+  36               		.loc 1 8 0
+  37 000c 8091 0000 		lds r24,count
+  38 0010 8F5F      		subi r24,lo8(-(1))
+  39 0012 8093 0000 		sts count,r24
+  40               	/* epilogue start */
+   9:main.c        **** }
+  41               		.loc 1 9 0
+  42 0016 8F91      		pop r24
+  43 0018 0F90      		pop r0
+  44 001a 0FBE      		out __SREG__,r0
+  45 001c 0F90      		pop r0
+  46 001e 1F90      		pop r1
+  47 0020 1895      		reti
+  48               		.cfi_endproc
+  49               	.LFE0:
+  51               		.section	.text.startup,"ax",@progbits
+  52               	.global	main
+  54               	main:
+  55               	.LFB1:
+  10:main.c        **** 
+  11:main.c        **** int main(void){
+  56               		.loc 1 11 0
+  57               		.cfi_startproc
+  58               	/* prologue: function */
+  59               	/* frame size = 0 */
+  60               	/* stack size = 0 */
+  61               	.L__stack_usage = 0
+  12:main.c        **** 	
+  13:main.c        **** 	DDRC = 0xff; //kierunek wyjsciowy dla diod LED
+  62               		.loc 1 13 0
+  63 0000 8FEF      		ldi r24,lo8(-1)
+  64 0002 84BB      		out 0x14,r24
+  14:main.c        **** 	PORTC = 0xff; //diody wylaczone
+  65               		.loc 1 14 0
+  66 0004 85BB      		out 0x15,r24
+  15:main.c        **** 	
+  16:main.c        **** 	DDRD &=~(1<<INT0_pin); //kierunek wejsciowy na INT0_pin
+  67               		.loc 1 16 0
+  68 0006 8A98      		cbi 0x11,2
+  17:main.c        **** 	PORTD |= (1<<INT0_pin); //wlaczamy rezystor podciagajacy (Pull-up) na INT0_pin
+  69               		.loc 1 17 0
+  70 0008 929A      		sbi 0x12,2
+  18:main.c        **** 	
+  19:main.c        **** 	
+  20:main.c        **** 	MCUCR |= (1<<ISC01);
+  71               		.loc 1 20 0
+  72 000a 85B7      		in r24,0x35
+  73 000c 8260      		ori r24,lo8(2)
+  74 000e 85BF      		out 0x35,r24
+  21:main.c        **** 	GICR |= (1<<INT0);
+  75               		.loc 1 21 0
+  76 0010 8BB7      		in r24,0x3b
+  77 0012 8064      		ori r24,lo8(64)
+  78 0014 8BBF      		out 0x3b,r24
+  22:main.c        **** 	
+  23:main.c        **** 	sei();
+  79               		.loc 1 23 0
+  80               	/* #APP */
+  81               	 ;  23 "main.c" 1
+  82 0016 7894      		sei
+  83               	 ;  0 "" 2
+  84               	/* #NOAPP */
+  85               	.L3:
+  24:main.c        **** 	while(1){
+  25:main.c        **** 		PORTC = ~count;
+  86               		.loc 1 25 0 discriminator 1
+  87 0018 8091 0000 		lds r24,count
+  88 001c 8095      		com r24
+  89 001e 85BB      		out 0x15,r24
+  90 0020 00C0      		rjmp .L3
+  91               		.cfi_endproc
+  92               	.LFE1:
+  94               	.global	count
+  95               		.section .bss
+  98               	count:
+  99 0000 00        		.zero	1
+ 100               		.text
+ 101               	.Letext0:
+ 102               		.file 2 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccFettKB.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccFettKB.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccFettKB.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccFettKB.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccFettKB.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccFettKB.s:12     .text:0000000000000000 __vector_1
+     /tmp/ccFettKB.s:98     .bss:0000000000000000 count
+     /tmp/ccFettKB.s:54     .text.startup:0000000000000000 main
+
+UNDEFINED SYMBOLS
+__do_clear_bss
