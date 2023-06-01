@@ -1,0 +1,526 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	__vector_7
+  12               	__vector_7:
+  13               	.LFB0:
+  14               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include <avr/interrupt.h>
+   3:main.c        **** 
+   4:main.c        **** 
+   5:main.c        **** #define SWITCH_PORT PORTC // rejestr port switcha
+   6:main.c        **** #define SWITCH_PORT_DIR DDRC // rejestr kierunku switcha
+   7:main.c        **** #define SWITCH_PORT_INPUT PINC // rejestr wejsciowy switcha
+   8:main.c        **** #define SWITCH PC6 // switch podlaczony do PD6
+   9:main.c        **** 
+  10:main.c        **** #define LED7SEG_DIGIT PORTC
+  11:main.c        **** #define LED7SEG_DIGIT_DIR DDRC
+  12:main.c        **** #define LED_SEGMENT PORTD
+  13:main.c        **** #define LED_SEGMENT_DIR DDRD
+  14:main.c        **** #define LED7SEG_SEGMENT PORTD
+  15:main.c        **** #define LED7SEG_SEGMENT_DIR DDRD
+  16:main.c        **** 
+  17:main.c        **** #define LED_PORT_DIR DDRA
+  18:main.c        **** #define LED_PORT PORTA
+  19:main.c        **** #define LED PA0
+  20:main.c        **** #define BUZZER PA1
+  21:main.c        **** 
+  22:main.c        **** volatile uint16_t liczba = 60;
+  23:main.c        **** volatile uint8_t t, s, d, j;
+  24:main.c        **** 
+  25:main.c        **** 
+  26:main.c        **** ISR(TIMER1_COMPA_vect) {
+  15               		.loc 1 26 0
+  16               		.cfi_startproc
+  17 0000 1F92      		push r1
+  18               	.LCFI0:
+  19               		.cfi_def_cfa_offset 3
+  20               		.cfi_offset 1, -2
+  21 0002 0F92      		push r0
+  22               	.LCFI1:
+  23               		.cfi_def_cfa_offset 4
+  24               		.cfi_offset 0, -3
+  25 0004 0FB6      		in r0,__SREG__
+  26 0006 0F92      		push r0
+  27 0008 1124      		clr __zero_reg__
+  28 000a 8F93      		push r24
+  29               	.LCFI2:
+  30               		.cfi_def_cfa_offset 5
+  31               		.cfi_offset 24, -4
+  32 000c 9F93      		push r25
+  33               	.LCFI3:
+  34               		.cfi_def_cfa_offset 6
+  35               		.cfi_offset 25, -5
+  36               	/* prologue: Signal */
+  37               	/* frame size = 0 */
+  38               	/* stack size = 5 */
+  39               	.L__stack_usage = 5
+  27:main.c        **** 	if(!( SWITCH_PORT_INPUT & ( 1 << SWITCH) )) {
+  40               		.loc 1 27 0
+  41 000e 9E99      		sbic 0x13,6
+  42 0010 00C0      		rjmp .L2
+  28:main.c        **** 		liczba++;
+  43               		.loc 1 28 0
+  44 0012 8091 0000 		lds r24,liczba
+  45 0016 9091 0000 		lds r25,liczba+1
+  46 001a 0196      		adiw r24,1
+  47 001c 00C0      		rjmp .L4
+  48               	.L2:
+  29:main.c        **** 	} else {
+  30:main.c        **** 		liczba--;
+  49               		.loc 1 30 0
+  50 001e 8091 0000 		lds r24,liczba
+  51 0022 9091 0000 		lds r25,liczba+1
+  52 0026 0197      		sbiw r24,1
+  53               	.L4:
+  54 0028 9093 0000 		sts liczba+1,r25
+  55 002c 8093 0000 		sts liczba,r24
+  56               	/* epilogue start */
+  31:main.c        **** 	}
+  32:main.c        **** }
+  57               		.loc 1 32 0
+  58 0030 9F91      		pop r25
+  59 0032 8F91      		pop r24
+  60 0034 0F90      		pop r0
+  61 0036 0FBE      		out __SREG__,r0
+  62 0038 0F90      		pop r0
+  63 003a 1F90      		pop r1
+  64 003c 1895      		reti
+  65               		.cfi_endproc
+  66               	.LFE0:
+  68               	.global	__vector_10
+  70               	__vector_10:
+  71               	.LFB1:
+  33:main.c        **** 
+  34:main.c        **** ISR(TIMER0_COMP_vect) {
+  72               		.loc 1 34 0
+  73               		.cfi_startproc
+  74 003e 1F92      		push r1
+  75               	.LCFI4:
+  76               		.cfi_def_cfa_offset 3
+  77               		.cfi_offset 1, -2
+  78 0040 0F92      		push r0
+  79               	.LCFI5:
+  80               		.cfi_def_cfa_offset 4
+  81               		.cfi_offset 0, -3
+  82 0042 0FB6      		in r0,__SREG__
+  83 0044 0F92      		push r0
+  84 0046 1124      		clr __zero_reg__
+  85 0048 2F93      		push r18
+  86               	.LCFI6:
+  87               		.cfi_def_cfa_offset 5
+  88               		.cfi_offset 18, -4
+  89 004a 8F93      		push r24
+  90               	.LCFI7:
+  91               		.cfi_def_cfa_offset 6
+  92               		.cfi_offset 24, -5
+  93 004c 9F93      		push r25
+  94               	.LCFI8:
+  95               		.cfi_def_cfa_offset 7
+  96               		.cfi_offset 25, -6
+  97               	/* prologue: Signal */
+  98               	/* frame size = 0 */
+  99               	/* stack size = 6 */
+ 100               	.L__stack_usage = 6
+  35:main.c        **** 	static uint8_t digit = 0; //statyczna zmienna pamieta
+  36:main.c        **** 	LED7SEG_DIGIT |= 0x0f; //zgaszenie wszystkich cyfr
+ 101               		.loc 1 36 0
+ 102 004e 85B3      		in r24,0x15
+ 103 0050 8F60      		ori r24,lo8(15)
+ 104 0052 85BB      		out 0x15,r24
+  37:main.c        **** 	switch(digit) {
+ 105               		.loc 1 37 0
+ 106 0054 8091 0000 		lds r24,digit.1615
+ 107 0058 8130      		cpi r24,lo8(1)
+ 108 005a 01F0      		breq .L8
+ 109 005c 00F0      		brlo .L9
+ 110 005e 8230      		cpi r24,lo8(2)
+ 111 0060 01F0      		breq .L10
+ 112 0062 8330      		cpi r24,lo8(3)
+ 113 0064 01F4      		brne .L7
+  38:main.c        **** 		case 0: LED7SEG_SEGMENT=j; break;
+  39:main.c        **** 		case 1: LED7SEG_SEGMENT=d; break;
+  40:main.c        **** 		case 2: LED7SEG_SEGMENT=s; break;
+  41:main.c        **** 		case 3: LED7SEG_SEGMENT=t; break;
+ 114               		.loc 1 41 0
+ 115 0066 8091 0000 		lds r24,t
+ 116 006a 00C0      		rjmp .L12
+ 117               	.L9:
+  38:main.c        **** 		case 0: LED7SEG_SEGMENT=j; break;
+ 118               		.loc 1 38 0
+ 119 006c 8091 0000 		lds r24,j
+ 120 0070 00C0      		rjmp .L12
+ 121               	.L8:
+  39:main.c        **** 		case 2: LED7SEG_SEGMENT=s; break;
+ 122               		.loc 1 39 0
+ 123 0072 8091 0000 		lds r24,d
+ 124 0076 00C0      		rjmp .L12
+ 125               	.L10:
+  40:main.c        **** 		case 3: LED7SEG_SEGMENT=t; break;
+ 126               		.loc 1 40 0
+ 127 0078 8091 0000 		lds r24,s
+ 128               	.L12:
+ 129               		.loc 1 41 0
+ 130 007c 82BB      		out 0x12,r24
+ 131               	.L7:
+  42:main.c        **** 	}
+  43:main.c        **** 	LED7SEG_DIGIT &= ~(1<<digit); //wlaczamy kolejna cyfre
+ 132               		.loc 1 43 0
+ 133 007e 25B3      		in r18,0x15
+ 134 0080 81E0      		ldi r24,lo8(1)
+ 135 0082 90E0      		ldi r25,0
+ 136 0084 0090 0000 		lds r0,digit.1615
+ 137 0088 00C0      		rjmp 2f
+ 138               		1:
+ 139 008a 880F      		lsl r24
+ 140 008c 991F      		rol r25
+ 141               		2:
+ 142 008e 0A94      		dec r0
+ 143 0090 02F4      		brpl 1b
+ 144 0092 8095      		com r24
+ 145 0094 8223      		and r24,r18
+ 146 0096 85BB      		out 0x15,r24
+  44:main.c        **** 	digit++;
+  45:main.c        **** 	digit %= 4; //aby zapetlaly sie 0-3
+ 147               		.loc 1 45 0
+ 148 0098 8091 0000 		lds r24,digit.1615
+ 149 009c 8F5F      		subi r24,lo8(-(1))
+ 150 009e 8370      		andi r24,lo8(3)
+ 151 00a0 8093 0000 		sts digit.1615,r24
+ 152               	/* epilogue start */
+  46:main.c        **** 	
+  47:main.c        **** }
+ 153               		.loc 1 47 0
+ 154 00a4 9F91      		pop r25
+ 155 00a6 8F91      		pop r24
+ 156 00a8 2F91      		pop r18
+ 157 00aa 0F90      		pop r0
+ 158 00ac 0FBE      		out __SREG__,r0
+ 159 00ae 0F90      		pop r0
+ 160 00b0 1F90      		pop r1
+ 161 00b2 1895      		reti
+ 162               		.cfi_endproc
+ 163               	.LFE1:
+ 165               		.section	.rodata
+ 166               	.LC0:
+ 167 0000 C0        		.byte	-64
+ 168 0001 F9        		.byte	-7
+ 169 0002 A4        		.byte	-92
+ 170 0003 B0        		.byte	-80
+ 171 0004 99        		.byte	-103
+ 172 0005 92        		.byte	-110
+ 173 0006 82        		.byte	-126
+ 174 0007 F8        		.byte	-8
+ 175 0008 80        		.byte	-128
+ 176 0009 90        		.byte	-112
+ 177               		.text
+ 178               	.global	led7seg
+ 180               	led7seg:
+ 181               	.LFB2:
+  48:main.c        **** 
+  49:main.c        **** void led7seg(uint16_t liczba) {
+ 182               		.loc 1 49 0
+ 183               		.cfi_startproc
+ 184               	.LVL0:
+ 185 00b4 0F93      		push r16
+ 186               	.LCFI9:
+ 187               		.cfi_def_cfa_offset 3
+ 188               		.cfi_offset 16, -2
+ 189 00b6 1F93      		push r17
+ 190               	.LCFI10:
+ 191               		.cfi_def_cfa_offset 4
+ 192               		.cfi_offset 17, -3
+ 193 00b8 CF93      		push r28
+ 194               	.LCFI11:
+ 195               		.cfi_def_cfa_offset 5
+ 196               		.cfi_offset 28, -4
+ 197 00ba DF93      		push r29
+ 198               	.LCFI12:
+ 199               		.cfi_def_cfa_offset 6
+ 200               		.cfi_offset 29, -5
+ 201 00bc CDB7      		in r28,__SP_L__
+ 202 00be DEB7      		in r29,__SP_H__
+ 203               	.LCFI13:
+ 204               		.cfi_def_cfa_register 28
+ 205 00c0 2A97      		sbiw r28,10
+ 206               	.LCFI14:
+ 207               		.cfi_def_cfa_offset 16
+ 208 00c2 0FB6      		in __tmp_reg__,__SREG__
+ 209 00c4 F894      		cli
+ 210 00c6 DEBF      		out __SP_H__,r29
+ 211 00c8 0FBE      		out __SREG__,__tmp_reg__
+ 212 00ca CDBF      		out __SP_L__,r28
+ 213               	/* prologue: function */
+ 214               	/* frame size = 10 */
+ 215               	/* stack size = 14 */
+ 216               	.L__stack_usage = 14
+ 217 00cc 8C01      		movw r16,r24
+  50:main.c        **** 	uint8_t digits_7seg[] = { 	~0x3f,//0
+ 218               		.loc 1 50 0
+ 219 00ce 8AE0      		ldi r24,lo8(10)
+ 220               	.LVL1:
+ 221 00d0 E0E0      		ldi r30,lo8(.LC0)
+ 222 00d2 F0E0      		ldi r31,hi8(.LC0)
+ 223 00d4 DE01      		movw r26,r28
+ 224 00d6 1196      		adiw r26,1
+ 225               		0:
+ 226 00d8 0190      		ld r0,Z+
+ 227 00da 0D92      		st X+,r0
+ 228 00dc 8A95      		dec r24
+ 229 00de 01F4      		brne 0b
+  51:main.c        **** 								~0x06, //1
+  52:main.c        **** 								~0x5b, //2
+  53:main.c        **** 								~0x4f, //3
+  54:main.c        **** 								~0x66, //4
+  55:main.c        **** 								~0x6d, //5
+  56:main.c        **** 								~0x7d, //6
+  57:main.c        **** 								~0x07, //7
+  58:main.c        **** 								~0x7f, //8
+  59:main.c        **** 								~0x6f, //9
+  60:main.c        **** 	};
+  61:main.c        **** 	j=digits_7seg[liczba % 10];
+ 230               		.loc 1 61 0
+ 231 00e0 2AE0      		ldi r18,lo8(10)
+ 232 00e2 30E0      		ldi r19,0
+ 233 00e4 C801      		movw r24,r16
+ 234 00e6 B901      		movw r22,r18
+ 235 00e8 0E94 0000 		call __udivmodhi4
+ 236 00ec E1E0      		ldi r30,lo8(1)
+ 237 00ee F0E0      		ldi r31,0
+ 238 00f0 EC0F      		add r30,r28
+ 239 00f2 FD1F      		adc r31,r29
+ 240 00f4 E80F      		add r30,r24
+ 241 00f6 F91F      		adc r31,r25
+ 242 00f8 8081      		ld r24,Z
+ 243 00fa 8093 0000 		sts j,r24
+ 244               	.LVL2:
+  62:main.c        **** 	liczba /= 10;
+  63:main.c        **** 	d=digits_7seg[liczba % 10];
+ 245               		.loc 1 63 0
+ 246 00fe CB01      		movw r24,r22
+ 247 0100 B901      		movw r22,r18
+ 248               	.LVL3:
+ 249 0102 0E94 0000 		call __udivmodhi4
+ 250               	.LVL4:
+ 251 0106 E1E0      		ldi r30,lo8(1)
+ 252 0108 F0E0      		ldi r31,0
+ 253 010a EC0F      		add r30,r28
+ 254 010c FD1F      		adc r31,r29
+ 255 010e E80F      		add r30,r24
+ 256 0110 F91F      		adc r31,r25
+ 257 0112 8081      		ld r24,Z
+ 258 0114 8093 0000 		sts d,r24
+ 259               	.LVL5:
+  64:main.c        **** 	liczba /= 10;
+  65:main.c        **** 	s=digits_7seg[liczba % 10];
+ 260               		.loc 1 65 0
+ 261 0118 C801      		movw r24,r16
+ 262 011a 64E6      		ldi r22,lo8(100)
+ 263 011c 70E0      		ldi r23,0
+ 264 011e 0E94 0000 		call __udivmodhi4
+ 265               	.LVL6:
+ 266 0122 CB01      		movw r24,r22
+ 267 0124 B901      		movw r22,r18
+ 268               	.LVL7:
+ 269 0126 0E94 0000 		call __udivmodhi4
+ 270               	.LVL8:
+ 271 012a E1E0      		ldi r30,lo8(1)
+ 272 012c F0E0      		ldi r31,0
+ 273 012e EC0F      		add r30,r28
+ 274 0130 FD1F      		adc r31,r29
+ 275 0132 E80F      		add r30,r24
+ 276 0134 F91F      		adc r31,r25
+ 277 0136 8081      		ld r24,Z
+ 278 0138 8093 0000 		sts s,r24
+ 279               	.LVL9:
+  66:main.c        **** 	liczba /= 10;
+  67:main.c        **** 	t=digits_7seg[liczba % 10];
+ 280               		.loc 1 67 0
+ 281 013c C801      		movw r24,r16
+ 282 013e 68EE      		ldi r22,lo8(-24)
+ 283 0140 73E0      		ldi r23,lo8(3)
+ 284 0142 0E94 0000 		call __udivmodhi4
+ 285               	.LVL10:
+ 286 0146 CB01      		movw r24,r22
+ 287 0148 B901      		movw r22,r18
+ 288               	.LVL11:
+ 289 014a 0E94 0000 		call __udivmodhi4
+ 290               	.LVL12:
+ 291 014e E1E0      		ldi r30,lo8(1)
+ 292 0150 F0E0      		ldi r31,0
+ 293 0152 EC0F      		add r30,r28
+ 294 0154 FD1F      		adc r31,r29
+ 295 0156 E80F      		add r30,r24
+ 296 0158 F91F      		adc r31,r25
+ 297 015a 8081      		ld r24,Z
+ 298 015c 8093 0000 		sts t,r24
+ 299               	/* epilogue start */
+  68:main.c        **** }
+ 300               		.loc 1 68 0
+ 301 0160 2A96      		adiw r28,10
+ 302 0162 0FB6      		in __tmp_reg__,__SREG__
+ 303 0164 F894      		cli
+ 304 0166 DEBF      		out __SP_H__,r29
+ 305 0168 0FBE      		out __SREG__,__tmp_reg__
+ 306 016a CDBF      		out __SP_L__,r28
+ 307 016c DF91      		pop r29
+ 308 016e CF91      		pop r28
+ 309 0170 1F91      		pop r17
+ 310 0172 0F91      		pop r16
+ 311               	.LVL13:
+ 312 0174 0895      		ret
+ 313               		.cfi_endproc
+ 314               	.LFE2:
+ 316               		.section	.text.startup,"ax",@progbits
+ 317               	.global	main
+ 319               	main:
+ 320               	.LFB3:
+  69:main.c        **** 
+  70:main.c        **** 
+  71:main.c        **** int main(void){
+ 321               		.loc 1 71 0
+ 322               		.cfi_startproc
+ 323               	/* prologue: function */
+ 324               	/* frame size = 0 */
+ 325               	/* stack size = 0 */
+ 326               	.L__stack_usage = 0
+  72:main.c        **** 	LED_PORT_DIR |= (1 << LED) | (1 << BUZZER);
+ 327               		.loc 1 72 0
+ 328 0000 8AB3      		in r24,0x1a
+ 329 0002 8360      		ori r24,lo8(3)
+ 330 0004 8ABB      		out 0x1a,r24
+  73:main.c        **** 	LED_PORT = (1 << LED);
+ 331               		.loc 1 73 0
+ 332 0006 81E0      		ldi r24,lo8(1)
+ 333 0008 8BBB      		out 0x1b,r24
+  74:main.c        **** 	
+  75:main.c        **** 	LED7SEG_DIGIT_DIR = 0x0f;
+ 334               		.loc 1 75 0
+ 335 000a 8FE0      		ldi r24,lo8(15)
+ 336 000c 84BB      		out 0x14,r24
+  76:main.c        **** 	LED7SEG_DIGIT = 0x0f;
+ 337               		.loc 1 76 0
+ 338 000e 85BB      		out 0x15,r24
+  77:main.c        **** 	
+  78:main.c        **** 	SWITCH_PORT_DIR &= ~(1 << SWITCH);
+ 339               		.loc 1 78 0
+ 340 0010 A698      		cbi 0x14,6
+  79:main.c        **** 	SWITCH_PORT |= (1 << SWITCH);
+ 341               		.loc 1 79 0
+ 342 0012 AE9A      		sbi 0x15,6
+  80:main.c        **** 	
+  81:main.c        **** 	LED_SEGMENT_DIR = 0xff;
+ 343               		.loc 1 81 0
+ 344 0014 8FEF      		ldi r24,lo8(-1)
+ 345 0016 81BB      		out 0x11,r24
+  82:main.c        **** 	LED_SEGMENT = 0xff;
+ 346               		.loc 1 82 0
+ 347 0018 82BB      		out 0x12,r24
+  83:main.c        **** 	
+  84:main.c        **** 	TCCR0 |= (1 << WGM01) | (1 << CS02);
+ 348               		.loc 1 84 0
+ 349 001a 83B7      		in r24,0x33
+ 350 001c 8C60      		ori r24,lo8(12)
+ 351 001e 83BF      		out 0x33,r24
+  85:main.c        **** 	OCR0 = 124;
+ 352               		.loc 1 85 0
+ 353 0020 9CE7      		ldi r25,lo8(124)
+ 354 0022 9CBF      		out 0x3c,r25
+  86:main.c        **** 	
+  87:main.c        **** 	TCCR1B |= (1 << WGM12) | (1 << CS12);
+ 355               		.loc 1 87 0
+ 356 0024 8EB5      		in r24,0x2e
+ 357 0026 8C60      		ori r24,lo8(12)
+ 358 0028 8EBD      		out 0x2e,r24
+  88:main.c        **** 	OCR1A = 62499;
+ 359               		.loc 1 88 0
+ 360 002a 23E2      		ldi r18,lo8(35)
+ 361 002c 34EF      		ldi r19,lo8(-12)
+ 362 002e 3BBD      		out 0x2a+1,r19
+ 363 0030 2ABD      		out 0x2a,r18
+  89:main.c        **** 	
+  90:main.c        **** 	TIMSK |= (1 << OCIE0) | (1 << OCIE1A);
+ 364               		.loc 1 90 0
+ 365 0032 89B7      		in r24,0x39
+ 366 0034 8261      		ori r24,lo8(18)
+ 367 0036 89BF      		out 0x39,r24
+  91:main.c        **** 	OCR0 = 124;
+ 368               		.loc 1 91 0
+ 369 0038 9CBF      		out 0x3c,r25
+  92:main.c        **** 	sei();
+ 370               		.loc 1 92 0
+ 371               	/* #APP */
+ 372               	 ;  92 "main.c" 1
+ 373 003a 7894      		sei
+ 374               	 ;  0 "" 2
+ 375               	/* #NOAPP */
+ 376               	.L15:
+  93:main.c        **** 	while(1){
+  94:main.c        **** 		led7seg(liczba);
+ 377               		.loc 1 94 0
+ 378 003c 8091 0000 		lds r24,liczba
+ 379 0040 9091 0000 		lds r25,liczba+1
+ 380 0044 0E94 0000 		call led7seg
+ 381               	.LVL14:
+  95:main.c        **** 		if (liczba == 0) {
+ 382               		.loc 1 95 0
+ 383 0048 8091 0000 		lds r24,liczba
+ 384 004c 9091 0000 		lds r25,liczba+1
+ 385 0050 892B      		or r24,r25
+ 386 0052 01F4      		brne .L15
+  96:main.c        **** 			LED_PORT &= ~(1 << LED);
+ 387               		.loc 1 96 0
+ 388 0054 D898      		cbi 0x1b,0
+  97:main.c        **** 			LED_PORT |= (1 << BUZZER);
+ 389               		.loc 1 97 0
+ 390 0056 D99A      		sbi 0x1b,1
+  98:main.c        **** 			TCCR1B &= ~(1 << CS12);
+ 391               		.loc 1 98 0
+ 392 0058 8EB5      		in r24,0x2e
+ 393 005a 8B7F      		andi r24,lo8(-5)
+ 394 005c 8EBD      		out 0x2e,r24
+ 395 005e 00C0      		rjmp .L15
+ 396               		.cfi_endproc
+ 397               	.LFE3:
+ 399               		.local	digit.1615
+ 400               		.comm	digit.1615,1,1
+ 401               		.comm	j,1,1
+ 402               		.comm	d,1,1
+ 403               		.comm	s,1,1
+ 404               		.comm	t,1,1
+ 405               	.global	liczba
+ 406               		.data
+ 409               	liczba:
+ 410 0000 3C00      		.word	60
+ 411               		.text
+ 412               	.Letext0:
+ 413               		.file 2 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccyofGJq.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccyofGJq.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccyofGJq.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccyofGJq.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccyofGJq.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccyofGJq.s:12     .text:0000000000000000 __vector_7
+     /tmp/ccyofGJq.s:409    .data:0000000000000000 liczba
+     /tmp/ccyofGJq.s:70     .text:000000000000003e __vector_10
+                             .bss:0000000000000000 digit.1615
+                            *COM*:0000000000000001 t
+                            *COM*:0000000000000001 j
+                            *COM*:0000000000000001 d
+                            *COM*:0000000000000001 s
+     /tmp/ccyofGJq.s:180    .text:00000000000000b4 led7seg
+     /tmp/ccyofGJq.s:319    .text.startup:0000000000000000 main
+
+UNDEFINED SYMBOLS
+__udivmodhi4
+__do_copy_data
+__do_clear_bss

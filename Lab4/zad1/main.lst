@@ -1,0 +1,176 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	__vector_9
+  12               	__vector_9:
+  13               	.LFB0:
+  14               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include <avr/interrupt.h>
+   3:main.c        **** 
+   4:main.c        **** #define LED_PORT PORTC // port wyjsciowy do zapalania diody 
+   5:main.c        **** #define LED_PORT_DIR DDRC // rejestr kierunku potu diody
+   6:main.c        **** #define SWITCH_PORT PORTD // rejestr port switcha
+   7:main.c        **** #define SWITCH_PORT_DIR DDRD // rejestr kierunku switcha
+   8:main.c        **** #define SWITCH_PORT_INPUT PIND // rejestr wejsciowy switcha
+   9:main.c        **** #define LED PC0 // dioda LED podlaczona do PC0
+  10:main.c        **** #define SWITCH PD6 //switch podlaczony do PD6
+  11:main.c        **** 
+  12:main.c        **** #define COUNTER_PRE_VAL 40536 //wartosc inicjujaca licznik val
+  13:main.c        **** 
+  14:main.c        **** volatile uint8_t status_led = 0; //stan wlaczenia led
+  15:main.c        **** 
+  16:main.c        **** 
+  17:main.c        **** ISR(TIMER1_OVF_vect) {
+  15               		.loc 1 17 0
+  16               		.cfi_startproc
+  17 0000 1F92      		push r1
+  18               	.LCFI0:
+  19               		.cfi_def_cfa_offset 3
+  20               		.cfi_offset 1, -2
+  21 0002 0F92      		push r0
+  22               	.LCFI1:
+  23               		.cfi_def_cfa_offset 4
+  24               		.cfi_offset 0, -3
+  25 0004 0FB6      		in r0,__SREG__
+  26 0006 0F92      		push r0
+  27 0008 1124      		clr __zero_reg__
+  28 000a 8F93      		push r24
+  29               	.LCFI2:
+  30               		.cfi_def_cfa_offset 5
+  31               		.cfi_offset 24, -4
+  32 000c 9F93      		push r25
+  33               	.LCFI3:
+  34               		.cfi_def_cfa_offset 6
+  35               		.cfi_offset 25, -5
+  36               	/* prologue: Signal */
+  37               	/* frame size = 0 */
+  38               	/* stack size = 5 */
+  39               	.L__stack_usage = 5
+  18:main.c        **** 	TCNT1 = COUNTER_PRE_VAL;
+  40               		.loc 1 18 0
+  41 000e 88E5      		ldi r24,lo8(88)
+  42 0010 9EE9      		ldi r25,lo8(-98)
+  43 0012 9DBD      		out 0x2c+1,r25
+  44 0014 8CBD      		out 0x2c,r24
+  19:main.c        **** 	if(!( SWITCH_PORT_INPUT & ( 1 << SWITCH) )) {
+  45               		.loc 1 19 0
+  46 0016 8699      		sbic 0x10,6
+  47 0018 00C0      		rjmp .L1
+  20:main.c        **** 		status_led ^= 1;
+  48               		.loc 1 20 0
+  49 001a 9091 0000 		lds r25,status_led
+  50 001e 81E0      		ldi r24,lo8(1)
+  51 0020 8927      		eor r24,r25
+  52 0022 8093 0000 		sts status_led,r24
+  53               	.L1:
+  54               	/* epilogue start */
+  21:main.c        **** 	}
+  22:main.c        **** }
+  55               		.loc 1 22 0
+  56 0026 9F91      		pop r25
+  57 0028 8F91      		pop r24
+  58 002a 0F90      		pop r0
+  59 002c 0FBE      		out __SREG__,r0
+  60 002e 0F90      		pop r0
+  61 0030 1F90      		pop r1
+  62 0032 1895      		reti
+  63               		.cfi_endproc
+  64               	.LFE0:
+  66               		.section	.text.startup,"ax",@progbits
+  67               	.global	main
+  69               	main:
+  70               	.LFB1:
+  23:main.c        **** int main(void){
+  71               		.loc 1 23 0
+  72               		.cfi_startproc
+  73               	/* prologue: function */
+  74               	/* frame size = 0 */
+  75               	/* stack size = 0 */
+  76               	.L__stack_usage = 0
+  24:main.c        **** 	LED_PORT_DIR = 1 << LED; // stan wyjsiowy na diodzie led
+  77               		.loc 1 24 0
+  78 0000 81E0      		ldi r24,lo8(1)
+  79 0002 84BB      		out 0x14,r24
+  25:main.c        **** 	LED_PORT = 1 << LED; // wylaczenie swiecenia led
+  80               		.loc 1 25 0
+  81 0004 85BB      		out 0x15,r24
+  26:main.c        **** 	
+  27:main.c        **** 	SWITCH_PORT_DIR = 0; // stan wejsciowy na porcie switch
+  82               		.loc 1 27 0
+  83 0006 11BA      		out 0x11,__zero_reg__
+  28:main.c        **** 	SWITCH_PORT = 1 << SWITCH; //wlaczamy rezystor Pull-up
+  84               		.loc 1 28 0
+  85 0008 80E4      		ldi r24,lo8(64)
+  86 000a 82BB      		out 0x12,r24
+  29:main.c        **** 	
+  30:main.c        **** 	TCCR1A = 0; //stan domyslny timera tryb normal
+  87               		.loc 1 30 0
+  88 000c 1FBC      		out 0x2f,__zero_reg__
+  31:main.c        **** 	TCNT1 = COUNTER_PRE_VAL; //inicjacja licznika wartoscia obliczona by odmierzac 1/10 sekund
+  89               		.loc 1 31 0
+  90 000e 88E5      		ldi r24,lo8(88)
+  91 0010 9EE9      		ldi r25,lo8(-98)
+  92 0012 9DBD      		out 0x2c+1,r25
+  93 0014 8CBD      		out 0x2c,r24
+  32:main.c        **** 	TIMSK = 1 << TOIE1; //wlaczamy przerwanie overflow
+  94               		.loc 1 32 0
+  95 0016 84E0      		ldi r24,lo8(4)
+  96 0018 89BF      		out 0x39,r24
+  33:main.c        **** 	
+  34:main.c        **** 	TCCR1B = (1 << CS11) | (1 << CS10); //wlaczanie licznika poprzez wybor preskalera u nas 64
+  97               		.loc 1 34 0
+  98 001a 83E0      		ldi r24,lo8(3)
+  99 001c 8EBD      		out 0x2e,r24
+  35:main.c        **** 	sei(); //wlaczanie globalnej flagi przerwan
+ 100               		.loc 1 35 0
+ 101               	/* #APP */
+ 102               	 ;  35 "main.c" 1
+ 103 001e 7894      		sei
+ 104               	 ;  0 "" 2
+ 105               	/* #NOAPP */
+ 106               	.L5:
+  36:main.c        **** 	
+  37:main.c        **** 	
+  38:main.c        **** 	while(1){
+  39:main.c        **** 		if(status_led) LED_PORT &= ~(1 << LED); //zapalenie
+ 107               		.loc 1 39 0
+ 108 0020 8091 0000 		lds r24,status_led
+ 109 0024 8823      		tst r24
+ 110 0026 01F0      		breq .L6
+ 111               		.loc 1 39 0 is_stmt 0 discriminator 1
+ 112 0028 A898      		cbi 0x15,0
+ 113 002a 00C0      		rjmp .L5
+ 114               	.L6:
+  40:main.c        **** 		else LED_PORT |= (1 << LED); //zgaszanie diody
+ 115               		.loc 1 40 0 is_stmt 1
+ 116 002c A89A      		sbi 0x15,0
+ 117 002e 00C0      		rjmp .L5
+ 118               		.cfi_endproc
+ 119               	.LFE1:
+ 121               	.global	status_led
+ 122               		.section .bss
+ 125               	status_led:
+ 126 0000 00        		.zero	1
+ 127               		.text
+ 128               	.Letext0:
+ 129               		.file 2 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccmy6g4k.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccmy6g4k.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccmy6g4k.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccmy6g4k.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccmy6g4k.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccmy6g4k.s:12     .text:0000000000000000 __vector_9
+     /tmp/ccmy6g4k.s:125    .bss:0000000000000000 status_led
+     /tmp/ccmy6g4k.s:69     .text.startup:0000000000000000 main
+
+UNDEFINED SYMBOLS
+__do_clear_bss

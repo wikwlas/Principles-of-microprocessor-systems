@@ -1,0 +1,399 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	__vector_7
+  12               	__vector_7:
+  13               	.LFB5:
+  14               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include <avr/interrupt.h>
+   3:main.c        **** #include <string.h>
+   4:main.c        **** #include <stdlib.h>
+   5:main.c        **** #include "rs232.h"
+   6:main.c        **** 
+   7:main.c        **** #define LED_PORT PORTC
+   8:main.c        **** #define LED_PORT_DIR DDRC
+   9:main.c        **** #define SWITCH_DIR DDRC
+  10:main.c        **** #define SWITCH_PORT PORTC
+  11:main.c        **** #define SWITCH_PORT_INPUT PINC
+  12:main.c        **** #define SWITCH PC1
+  13:main.c        **** #define LED PC0
+  14:main.c        **** 
+  15:main.c        **** volatile uint8_t led_status=0;
+  16:main.c        **** volatile uint8_t led_status_changed=0;
+  17:main.c        **** 
+  18:main.c        **** ISR(TIMER1_COMPA_vect) {
+  15               		.loc 1 18 0
+  16               		.cfi_startproc
+  17 0000 1F92      		push r1
+  18               	.LCFI0:
+  19               		.cfi_def_cfa_offset 3
+  20               		.cfi_offset 1, -2
+  21 0002 0F92      		push r0
+  22               	.LCFI1:
+  23               		.cfi_def_cfa_offset 4
+  24               		.cfi_offset 0, -3
+  25 0004 0FB6      		in r0,__SREG__
+  26 0006 0F92      		push r0
+  27 0008 1124      		clr __zero_reg__
+  28 000a 8F93      		push r24
+  29               	.LCFI2:
+  30               		.cfi_def_cfa_offset 5
+  31               		.cfi_offset 24, -4
+  32               	/* prologue: Signal */
+  33               	/* frame size = 0 */
+  34               	/* stack size = 4 */
+  35               	.L__stack_usage = 4
+  19:main.c        **** 	if(!SWITCH_PORT_INPUT & (1<<SWITCH)) {
+  36               		.loc 1 19 0
+  37 000c 83B3      		in r24,0x13
+  38               	/* epilogue start */
+  20:main.c        **** 		led_status_changed = 1;
+  21:main.c        **** 		led_status ^= 1;
+  22:main.c        **** 	}
+  23:main.c        **** }
+  39               		.loc 1 23 0
+  40 000e 8F91      		pop r24
+  41 0010 0F90      		pop r0
+  42 0012 0FBE      		out __SREG__,r0
+  43 0014 0F90      		pop r0
+  44 0016 1F90      		pop r1
+  45 0018 1895      		reti
+  46               		.cfi_endproc
+  47               	.LFE5:
+  49               		.section	.rodata.str1.1,"aMS",@progbits,1
+  50               	.LC0:
+  51 0000 5769 7461 		.string	"Witaj\r\n"
+  51      6A0D 0A00 
+  52               	.LC1:
+  53 0008 4C45 443A 		.string	"LED:1\r\n"
+  53      310D 0A00 
+  54               	.LC2:
+  55 0010 4C45 443A 		.string	"LED:0\r\n"
+  55      300D 0A00 
+  56               	.LC3:
+  57 0018 6865 6C70 		.string	"help"
+  57      00
+  58               	.LC4:
+  59 001d 4176 6169 		.string	"Available commands:\r\n"
+  59      6C61 626C 
+  59      6520 636F 
+  59      6D6D 616E 
+  59      6473 3A0D 
+  60               	.LC5:
+  61 0033 6865 6C70 		.string	"help - this list\r\n"
+  61      202D 2074 
+  61      6869 7320 
+  61      6C69 7374 
+  61      0D0A 00
+  62               	.LC6:
+  63 0046 6F6E 202D 		.string	"on - enable led\r\n"
+  63      2065 6E61 
+  63      626C 6520 
+  63      6C65 640D 
+  63      0A00 
+  64               	.LC7:
+  65 0058 6F66 6620 		.string	"off - disable led\r\n"
+  65      2D20 6469 
+  65      7361 626C 
+  65      6520 6C65 
+  65      640D 0A00 
+  66               	.LC8:
+  67 006c 6F66 6600 		.string	"off"
+  68               	.LC9:
+  69 0070 6F6E 00   		.string	"on"
+  70               	.LC10:
+  71 0073 556E 6B6E 		.string	"Unknown command: \r\n"
+  71      6F77 6E20 
+  71      636F 6D6D 
+  71      616E 643A 
+  71      200D 0A00 
+  72               	.LC11:
+  73 0087 0D0A 00   		.string	"\r\n"
+  74               		.section	.text.startup,"ax",@progbits
+  75               	.global	main
+  77               	main:
+  78               	.LFB6:
+  24:main.c        **** 
+  25:main.c        **** int main(void){
+  79               		.loc 1 25 0
+  80               		.cfi_startproc
+  81               	/* prologue: function */
+  82               	/* frame size = 0 */
+  83               	/* stack size = 0 */
+  84               	.L__stack_usage = 0
+  26:main.c        **** 	LED_PORT_DIR = (1 << LED);
+  85               		.loc 1 26 0
+  86 0000 81E0      		ldi r24,lo8(1)
+  87 0002 84BB      		out 0x14,r24
+  27:main.c        **** 	LED_PORT = (1 << LED);
+  88               		.loc 1 27 0
+  89 0004 85BB      		out 0x15,r24
+  28:main.c        **** 	
+  29:main.c        **** 	SWITCH_DIR &= ~(1 << SWITCH);
+  90               		.loc 1 29 0
+  91 0006 A198      		cbi 0x14,1
+  30:main.c        **** 	SWITCH_PORT |= (1 << SWITCH);
+  92               		.loc 1 30 0
+  93 0008 A99A      		sbi 0x15,1
+  31:main.c        **** 	
+  32:main.c        **** 	USART_init();
+  94               		.loc 1 32 0
+  95 000a 0E94 0000 		call USART_init
+  96               	.LVL0:
+  33:main.c        **** 	
+  34:main.c        **** 	TCCR1B = (1<<WGM12)|(1<<CS11)|(1<<CS10);
+  97               		.loc 1 34 0
+  98 000e 8BE0      		ldi r24,lo8(11)
+  99 0010 8EBD      		out 0x2e,r24
+  35:main.c        **** 	OCR1A = 24999;
+ 100               		.loc 1 35 0
+ 101 0012 87EA      		ldi r24,lo8(-89)
+ 102 0014 91E6      		ldi r25,lo8(97)
+ 103 0016 9BBD      		out 0x2a+1,r25
+ 104 0018 8ABD      		out 0x2a,r24
+  36:main.c        **** 	
+  37:main.c        **** 	TIMSK = (1<<OCIE1A);
+ 105               		.loc 1 37 0
+ 106 001a 80E1      		ldi r24,lo8(16)
+ 107 001c 89BF      		out 0x39,r24
+  38:main.c        **** 	sei();
+ 108               		.loc 1 38 0
+ 109               	/* #APP */
+ 110               	 ;  38 "main.c" 1
+ 111 001e 7894      		sei
+ 112               	 ;  0 "" 2
+  39:main.c        **** 	
+  40:main.c        **** 	USART_send("Witaj\r\n");
+ 113               		.loc 1 40 0
+ 114               	/* #NOAPP */
+ 115 0020 80E0      		ldi r24,lo8(.LC0)
+ 116 0022 90E0      		ldi r25,hi8(.LC0)
+ 117 0024 0E94 0000 		call USART_send
+ 118               	.LVL1:
+  41:main.c        **** 	
+  42:main.c        **** 	while(1) {
+  43:main.c        **** 		if(led_status_changed) {
+  44:main.c        **** 			led_status_changed=0;
+  45:main.c        **** 			if(led_status){
+  46:main.c        **** 				LED_PORT &= ~(1 << LED);
+  47:main.c        **** 				USART_send("LED:1\r\n");
+  48:main.c        **** 			} else {
+  49:main.c        **** 				LED_PORT |= (1 << LED);
+  50:main.c        **** 				USART_send("LED:0\r\n");
+  51:main.c        **** 			}
+  52:main.c        **** 		}
+  53:main.c        **** 		if(decode) {
+  54:main.c        **** 			if(strncmp((void *)bufor, "help", 4)==0) {
+  55:main.c        **** 				ack(0);
+  56:main.c        **** 				USART_send("Available commands:\r\n");
+  57:main.c        **** 				USART_send("help - this list\r\n");
+  58:main.c        **** 				USART_send("on - enable led\r\n");
+  59:main.c        **** 				USART_send("off - disable led\r\n");
+  60:main.c        **** 			}
+  61:main.c        **** 			else if(strncmp((void *)bufor, "off", 3)==0) {
+  62:main.c        **** 				led_status=0;
+  63:main.c        **** 				led_status_changed=1;
+  64:main.c        **** 				ack(0);
+  65:main.c        **** 			}
+  66:main.c        **** 			else if (strncmp((void *)bufor, "on", 2)==0) {
+  67:main.c        **** 				led_status=1;
+ 119               		.loc 1 67 0
+ 120 0028 C1E0      		ldi r28,lo8(1)
+ 121               	.L5:
+  43:main.c        **** 			led_status_changed=0;
+ 122               		.loc 1 43 0
+ 123 002a 8091 0000 		lds r24,led_status_changed
+ 124 002e 8823      		tst r24
+ 125 0030 01F0      		breq .L3
+  44:main.c        **** 			if(led_status){
+ 126               		.loc 1 44 0
+ 127 0032 1092 0000 		sts led_status_changed,__zero_reg__
+  45:main.c        **** 				LED_PORT &= ~(1 << LED);
+ 128               		.loc 1 45 0
+ 129 0036 8091 0000 		lds r24,led_status
+ 130 003a 8823      		tst r24
+ 131 003c 01F0      		breq .L4
+  46:main.c        **** 				USART_send("LED:1\r\n");
+ 132               		.loc 1 46 0
+ 133 003e A898      		cbi 0x15,0
+  47:main.c        **** 			} else {
+ 134               		.loc 1 47 0
+ 135 0040 80E0      		ldi r24,lo8(.LC1)
+ 136 0042 90E0      		ldi r25,hi8(.LC1)
+ 137 0044 00C0      		rjmp .L16
+ 138               	.L4:
+  49:main.c        **** 				USART_send("LED:0\r\n");
+ 139               		.loc 1 49 0
+ 140 0046 A89A      		sbi 0x15,0
+  50:main.c        **** 			}
+ 141               		.loc 1 50 0
+ 142 0048 80E0      		ldi r24,lo8(.LC2)
+ 143 004a 90E0      		ldi r25,hi8(.LC2)
+ 144               	.L16:
+ 145 004c 0E94 0000 		call USART_send
+ 146               	.LVL2:
+ 147               	.L3:
+  53:main.c        **** 			if(strncmp((void *)bufor, "help", 4)==0) {
+ 148               		.loc 1 53 0
+ 149 0050 8091 0000 		lds r24,decode
+ 150 0054 8823      		tst r24
+ 151 0056 01F0      		breq .L5
+  54:main.c        **** 				ack(0);
+ 152               		.loc 1 54 0
+ 153 0058 44E0      		ldi r20,lo8(4)
+ 154 005a 50E0      		ldi r21,0
+ 155 005c 60E0      		ldi r22,lo8(.LC3)
+ 156 005e 70E0      		ldi r23,hi8(.LC3)
+ 157 0060 80E0      		ldi r24,lo8(bufor)
+ 158 0062 90E0      		ldi r25,hi8(bufor)
+ 159 0064 0E94 0000 		call strncmp
+ 160               	.LVL3:
+ 161 0068 892B      		or r24,r25
+ 162 006a 01F4      		brne .L6
+  55:main.c        **** 				USART_send("Available commands:\r\n");
+ 163               		.loc 1 55 0
+ 164 006c 80E0      		ldi r24,0
+ 165 006e 0E94 0000 		call ack
+ 166               	.LVL4:
+  56:main.c        **** 				USART_send("help - this list\r\n");
+ 167               		.loc 1 56 0
+ 168 0072 80E0      		ldi r24,lo8(.LC4)
+ 169 0074 90E0      		ldi r25,hi8(.LC4)
+ 170 0076 0E94 0000 		call USART_send
+ 171               	.LVL5:
+  57:main.c        **** 				USART_send("on - enable led\r\n");
+ 172               		.loc 1 57 0
+ 173 007a 80E0      		ldi r24,lo8(.LC5)
+ 174 007c 90E0      		ldi r25,hi8(.LC5)
+ 175 007e 0E94 0000 		call USART_send
+ 176               	.LVL6:
+  58:main.c        **** 				USART_send("off - disable led\r\n");
+ 177               		.loc 1 58 0
+ 178 0082 80E0      		ldi r24,lo8(.LC6)
+ 179 0084 90E0      		ldi r25,hi8(.LC6)
+ 180 0086 0E94 0000 		call USART_send
+ 181               	.LVL7:
+  59:main.c        **** 			}
+ 182               		.loc 1 59 0
+ 183 008a 80E0      		ldi r24,lo8(.LC7)
+ 184 008c 90E0      		ldi r25,hi8(.LC7)
+ 185 008e 00C0      		rjmp .L17
+ 186               	.L6:
+  61:main.c        **** 				led_status=0;
+ 187               		.loc 1 61 0
+ 188 0090 43E0      		ldi r20,lo8(3)
+ 189 0092 50E0      		ldi r21,0
+ 190 0094 60E0      		ldi r22,lo8(.LC8)
+ 191 0096 70E0      		ldi r23,hi8(.LC8)
+ 192 0098 80E0      		ldi r24,lo8(bufor)
+ 193 009a 90E0      		ldi r25,hi8(bufor)
+ 194 009c 0E94 0000 		call strncmp
+ 195               	.LVL8:
+ 196 00a0 892B      		or r24,r25
+ 197 00a2 01F4      		brne .L8
+  62:main.c        **** 				led_status_changed=1;
+ 198               		.loc 1 62 0
+ 199 00a4 1092 0000 		sts led_status,__zero_reg__
+ 200 00a8 00C0      		rjmp .L18
+ 201               	.L8:
+  66:main.c        **** 				led_status=1;
+ 202               		.loc 1 66 0
+ 203 00aa 42E0      		ldi r20,lo8(2)
+ 204 00ac 50E0      		ldi r21,0
+ 205 00ae 60E0      		ldi r22,lo8(.LC9)
+ 206 00b0 70E0      		ldi r23,hi8(.LC9)
+ 207 00b2 80E0      		ldi r24,lo8(bufor)
+ 208 00b4 90E0      		ldi r25,hi8(bufor)
+ 209 00b6 0E94 0000 		call strncmp
+ 210               	.LVL9:
+ 211 00ba 892B      		or r24,r25
+ 212 00bc 01F4      		brne .L9
+ 213               		.loc 1 67 0
+ 214 00be C093 0000 		sts led_status,r28
+ 215               	.L18:
+  68:main.c        **** 				led_status_changed=1;
+ 216               		.loc 1 68 0
+ 217 00c2 C093 0000 		sts led_status_changed,r28
+  69:main.c        **** 				ack(0);
+ 218               		.loc 1 69 0
+ 219 00c6 80E0      		ldi r24,0
+ 220 00c8 0E94 0000 		call ack
+ 221               	.LVL10:
+ 222 00cc 00C0      		rjmp .L7
+ 223               	.L9:
+  70:main.c        **** 			} else {
+  71:main.c        **** 				ack(-1);
+ 224               		.loc 1 71 0
+ 225 00ce 8FEF      		ldi r24,lo8(-1)
+ 226 00d0 0E94 0000 		call ack
+ 227               	.LVL11:
+  72:main.c        **** 				USART_send("Unknown command: \r\n");
+ 228               		.loc 1 72 0
+ 229 00d4 80E0      		ldi r24,lo8(.LC10)
+ 230 00d6 90E0      		ldi r25,hi8(.LC10)
+ 231 00d8 0E94 0000 		call USART_send
+ 232               	.LVL12:
+  73:main.c        **** 				USART_send((void *)bufor);
+ 233               		.loc 1 73 0
+ 234 00dc 80E0      		ldi r24,lo8(bufor)
+ 235 00de 90E0      		ldi r25,hi8(bufor)
+ 236 00e0 0E94 0000 		call USART_send
+ 237               	.LVL13:
+  74:main.c        **** 				USART_send("\r\n");
+ 238               		.loc 1 74 0
+ 239 00e4 80E0      		ldi r24,lo8(.LC11)
+ 240 00e6 90E0      		ldi r25,hi8(.LC11)
+ 241               	.L17:
+ 242 00e8 0E94 0000 		call USART_send
+ 243               	.LVL14:
+ 244               	.L7:
+  75:main.c        **** 			}
+  76:main.c        **** 			
+  77:main.c        **** 			reset_buffer();
+ 245               		.loc 1 77 0
+ 246 00ec 0E94 0000 		call reset_buffer
+ 247               	.LVL15:
+ 248 00f0 00C0      		rjmp .L5
+ 249               		.cfi_endproc
+ 250               	.LFE6:
+ 252               	.global	led_status_changed
+ 253               		.section .bss
+ 256               	led_status_changed:
+ 257 0000 00        		.zero	1
+ 258               	.global	led_status
+ 261               	led_status:
+ 262 0001 00        		.zero	1
+ 263               		.text
+ 264               	.Letext0:
+ 265               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 266               		.file 3 "rs232.h"
+ 267               		.file 4 "/usr/lib/avr/include/string.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccQLo9mu.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccQLo9mu.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccQLo9mu.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccQLo9mu.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccQLo9mu.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccQLo9mu.s:12     .text:0000000000000000 __vector_7
+     /tmp/ccQLo9mu.s:77     .text.startup:0000000000000000 main
+     /tmp/ccQLo9mu.s:256    .bss:0000000000000000 led_status_changed
+     /tmp/ccQLo9mu.s:261    .bss:0000000000000001 led_status
+
+UNDEFINED SYMBOLS
+USART_init
+USART_send
+decode
+bufor
+strncmp
+ack
+reset_buffer
+__do_copy_data
+__do_clear_bss

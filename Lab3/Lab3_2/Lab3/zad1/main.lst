@@ -1,0 +1,119 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.rodata.str1.1,"aMS",@progbits,1
+  11               	.LC0:
+  12 0000 5069 2025 		.string	"Pi %.2f"
+  12      2E32 6600 
+  13               		.section	.text.startup,"ax",@progbits
+  14               	.global	main
+  16               	main:
+  17               	.LFB8:
+  18               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include <util/delay.h>
+   3:main.c        **** #include "lcd.h"
+   4:main.c        **** 
+   5:main.c        **** const char charrr[] PROGMEM = "Im here";
+   6:main.c        **** 
+   7:main.c        **** int main(void){
+  19               		.loc 1 7 0
+  20               		.cfi_startproc
+  21               	/* prologue: function */
+  22               	/* frame size = 0 */
+  23               	/* stack size = 0 */
+  24               	.L__stack_usage = 0
+   8:main.c        **** 	lcdinit();
+  25               		.loc 1 8 0
+  26 0000 0E94 0000 		call lcdinit
+  27               	.LVL0:
+   9:main.c        **** 	double pi = 3.1415;
+  10:main.c        **** 	lcd_set_xy(0, 0);
+  28               		.loc 1 10 0
+  29 0004 60E0      		ldi r22,0
+  30 0006 80E0      		ldi r24,0
+  31 0008 0E94 0000 		call lcd_set_xy
+  32               	.LVL1:
+  11:main.c        **** 	printf("Pi %.2f", pi);
+  33               		.loc 1 11 0
+  34 000c 80E4      		ldi r24,lo8(64)
+  35 000e 8F93      		push r24
+  36               	.LCFI0:
+  37               		.cfi_def_cfa_offset 3
+  38 0010 89E4      		ldi r24,lo8(73)
+  39 0012 8F93      		push r24
+  40               	.LCFI1:
+  41               		.cfi_def_cfa_offset 4
+  42 0014 8EE0      		ldi r24,lo8(14)
+  43 0016 8F93      		push r24
+  44               	.LCFI2:
+  45               		.cfi_def_cfa_offset 5
+  46 0018 86E5      		ldi r24,lo8(86)
+  47 001a 8F93      		push r24
+  48               	.LCFI3:
+  49               		.cfi_def_cfa_offset 6
+  50 001c 80E0      		ldi r24,lo8(.LC0)
+  51 001e 90E0      		ldi r25,hi8(.LC0)
+  52 0020 9F93      		push r25
+  53               	.LCFI4:
+  54               		.cfi_def_cfa_offset 7
+  55 0022 8F93      		push r24
+  56               	.LCFI5:
+  57               		.cfi_def_cfa_offset 8
+  58 0024 0E94 0000 		call printf
+  59               	.LVL2:
+  12:main.c        **** 	lcd_set_xy(0, 1);
+  60               		.loc 1 12 0
+  61 0028 61E0      		ldi r22,lo8(1)
+  62 002a 80E0      		ldi r24,0
+  63 002c 0E94 0000 		call lcd_set_xy
+  64               	.LVL3:
+  13:main.c        **** 	lcd_write_text_P(charrr);
+  65               		.loc 1 13 0
+  66 0030 80E0      		ldi r24,lo8(charrr)
+  67 0032 90E0      		ldi r25,hi8(charrr)
+  68 0034 0E94 0000 		call lcd_write_text_P
+  69               	.LVL4:
+  70 0038 0F90      		pop __tmp_reg__
+  71 003a 0F90      		pop __tmp_reg__
+  72 003c 0F90      		pop __tmp_reg__
+  73 003e 0F90      		pop __tmp_reg__
+  74 0040 0F90      		pop __tmp_reg__
+  75 0042 0F90      		pop __tmp_reg__
+  76               	.LCFI6:
+  77               		.cfi_def_cfa_offset 2
+  78               	.L2:
+  79 0044 00C0      		rjmp .L2
+  80               		.cfi_endproc
+  81               	.LFE8:
+  83               	.global	charrr
+  84               		.section	.progmem.data,"a",@progbits
+  87               	charrr:
+  88 0000 496D 2068 		.string	"Im here"
+  88      6572 6500 
+  89               		.text
+  90               	.Letext0:
+  91               		.file 2 "lcd.h"
+  92               		.file 3 "/usr/lib/avr/include/stdio.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccfNp9vZ.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccfNp9vZ.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccfNp9vZ.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccfNp9vZ.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccfNp9vZ.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccfNp9vZ.s:16     .text.startup:0000000000000000 main
+     /tmp/ccfNp9vZ.s:87     .progmem.data:0000000000000000 charrr
+
+UNDEFINED SYMBOLS
+lcdinit
+lcd_set_xy
+printf
+lcd_write_text_P
+__do_copy_data

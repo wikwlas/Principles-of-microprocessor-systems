@@ -1,0 +1,114 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.rodata.str1.1,"aMS",@progbits,1
+  11               	.LC0:
+  12 0000 447A 6973 		.string	"Dzisiaj Dzien Pi"
+  12      6961 6A20 
+  12      447A 6965 
+  12      6E20 5069 
+  12      00
+  13               	.LC1:
+  14 0011 332E 3134 		.string	"3.1415"
+  14      3135 00
+  15               		.section	.text.startup,"ax",@progbits
+  16               	.global	main
+  18               	main:
+  19               	.LFB8:
+  20               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include <util/delay.h>
+   3:main.c        **** #include "lcd.h"
+   4:main.c        **** 
+   5:main.c        **** const char charrr[] PROGMEM = "Im here";
+   6:main.c        **** 
+   7:main.c        **** int main(void){
+  21               		.loc 1 7 0
+  22               		.cfi_startproc
+  23               	/* prologue: function */
+  24               	/* frame size = 0 */
+  25               	/* stack size = 0 */
+  26               	.L__stack_usage = 0
+   8:main.c        **** 	lcdinit();
+  27               		.loc 1 8 0
+  28 0000 0E94 0000 		call lcdinit
+  29               	.LVL0:
+   9:main.c        **** 	
+  10:main.c        **** 	lcd_set_xy(0, 0);
+  30               		.loc 1 10 0
+  31 0004 60E0      		ldi r22,0
+  32 0006 80E0      		ldi r24,0
+  33 0008 0E94 0000 		call lcd_set_xy
+  34               	.LVL1:
+  11:main.c        **** 	printf("Dzisiaj Dzien Pi");
+  35               		.loc 1 11 0
+  36 000c 80E0      		ldi r24,lo8(.LC0)
+  37 000e 90E0      		ldi r25,hi8(.LC0)
+  38 0010 9F93      		push r25
+  39               	.LCFI0:
+  40               		.cfi_def_cfa_offset 3
+  41 0012 8F93      		push r24
+  42               	.LCFI1:
+  43               		.cfi_def_cfa_offset 4
+  44 0014 0E94 0000 		call printf
+  45               	.LVL2:
+  12:main.c        **** 	lcd_set_xy(0, 1);
+  46               		.loc 1 12 0
+  47 0018 61E0      		ldi r22,lo8(1)
+  48 001a 80E0      		ldi r24,0
+  49 001c 0E94 0000 		call lcd_set_xy
+  50               	.LVL3:
+  13:main.c        **** 	lcd_write_text_P(charrr);
+  51               		.loc 1 13 0
+  52 0020 80E0      		ldi r24,lo8(charrr)
+  53 0022 90E0      		ldi r25,hi8(charrr)
+  54 0024 0E94 0000 		call lcd_write_text_P
+  55               	.LVL4:
+  14:main.c        **** 	lcd_write_text_xy(8, 1, "3.1415");	
+  56               		.loc 1 14 0
+  57 0028 40E0      		ldi r20,lo8(.LC1)
+  58 002a 50E0      		ldi r21,hi8(.LC1)
+  59 002c 61E0      		ldi r22,lo8(1)
+  60 002e 88E0      		ldi r24,lo8(8)
+  61 0030 0E94 0000 		call lcd_write_text_xy
+  62               	.LVL5:
+  63 0034 0F90      		pop __tmp_reg__
+  64 0036 0F90      		pop __tmp_reg__
+  65               	.LCFI2:
+  66               		.cfi_def_cfa_offset 2
+  67               	.L2:
+  68 0038 00C0      		rjmp .L2
+  69               		.cfi_endproc
+  70               	.LFE8:
+  72               	.global	charrr
+  73               		.section	.progmem.data,"a",@progbits
+  76               	charrr:
+  77 0000 496D 2068 		.string	"Im here"
+  77      6572 6500 
+  78               		.text
+  79               	.Letext0:
+  80               		.file 2 "lcd.h"
+  81               		.file 3 "/usr/lib/avr/include/stdio.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccMve1qX.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccMve1qX.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccMve1qX.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccMve1qX.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccMve1qX.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccMve1qX.s:18     .text.startup:0000000000000000 main
+     /tmp/ccMve1qX.s:76     .progmem.data:0000000000000000 charrr
+
+UNDEFINED SYMBOLS
+lcdinit
+lcd_set_xy
+printf
+lcd_write_text_P
+lcd_write_text_xy
+__do_copy_data
