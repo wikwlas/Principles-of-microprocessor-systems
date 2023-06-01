@@ -1,0 +1,104 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.text.startup,"ax",@progbits
+  11               	.global	main
+  13               	main:
+  14               	.LFB6:
+  15               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include "longdelay.h"
+   3:main.c        **** 
+   4:main.c        **** #define BLINK_LED PC6
+   5:main.c        **** #define BUTTON PD0
+   6:main.c        **** #define BUTTONDIR DDRD
+   7:main.c        **** #define BUTTONPULLUP PORTD
+   8:main.c        **** #define BUTTONPIN PIND
+   9:main.c        **** #define LED PC7
+  10:main.c        **** #define LEDDIR DDRC
+  11:main.c        **** #define LEDPORT PORTC
+  12:main.c        **** 
+  13:main.c        **** 
+  14:main.c        **** int main(void){
+  16               		.loc 1 14 0
+  17               		.cfi_startproc
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  15:main.c        **** 	LEDDIR = (1<<LED)|(1<<BLINK_LED);
+  22               		.loc 1 15 0
+  23 0000 80EC      		ldi r24,lo8(-64)
+  24 0002 84BB      		out 0x14,r24
+  16:main.c        **** 	LEDPORT = (1<<LED)|(1<<BLINK_LED);
+  25               		.loc 1 16 0
+  26 0004 85BB      		out 0x15,r24
+  17:main.c        **** 	
+  18:main.c        **** 	BUTTONDIR &=~(1<<BUTTON);
+  27               		.loc 1 18 0
+  28 0006 8898      		cbi 0x11,0
+  19:main.c        **** 	BUTTONPULLUP |= (1<<BUTTON);
+  29               		.loc 1 19 0
+  30 0008 909A      		sbi 0x12,0
+  20:main.c        **** 	while(1){
+  21:main.c        **** 		if (!(BUTTONPIN & (1<<BUTTON))) {
+  22:main.c        **** 			LEDPORT&=~(1<<LED);  //zapal diode led
+  23:main.c        **** 		} else {
+  24:main.c        **** 			LEDPORT|=(1<<LED); //zgas diode led
+  25:main.c        **** 		}
+  26:main.c        **** 
+  27:main.c        **** 	
+  28:main.c        **** 	
+  29:main.c        **** 	LEDPORT ^= (1<<BLINK_LED);
+  31               		.loc 1 29 0
+  32 000a C0E4      		ldi r28,lo8(64)
+  33               	.L4:
+  21:main.c        **** 			LEDPORT&=~(1<<LED);  //zapal diode led
+  34               		.loc 1 21 0
+  35 000c 8099      		sbic 0x10,0
+  36 000e 00C0      		rjmp .L2
+  22:main.c        **** 		} else {
+  37               		.loc 1 22 0
+  38 0010 AF98      		cbi 0x15,7
+  39 0012 00C0      		rjmp .L3
+  40               	.L2:
+  24:main.c        **** 		}
+  41               		.loc 1 24 0
+  42 0014 AF9A      		sbi 0x15,7
+  43               	.L3:
+  44               		.loc 1 29 0
+  45 0016 85B3      		in r24,0x15
+  46 0018 8C27      		eor r24,r28
+  47 001a 85BB      		out 0x15,r24
+  30:main.c        **** 	longdelay(500);
+  48               		.loc 1 30 0
+  49 001c 84EF      		ldi r24,lo8(-12)
+  50 001e 91E0      		ldi r25,lo8(1)
+  51 0020 0E94 0000 		call longdelay
+  52               	.LVL0:
+  31:main.c        **** }
+  53               		.loc 1 31 0
+  54 0024 00C0      		rjmp .L4
+  55               		.cfi_endproc
+  56               	.LFE6:
+  58               		.text
+  59               	.Letext0:
+  60               		.file 2 "/usr/lib/avr/include/stdint.h"
+  61               		.file 3 "longdelay.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccqgRPOx.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccqgRPOx.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccqgRPOx.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccqgRPOx.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccqgRPOx.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccqgRPOx.s:13     .text.startup:0000000000000000 main
+
+UNDEFINED SYMBOLS
+longdelay

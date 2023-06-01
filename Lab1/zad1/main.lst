@@ -1,0 +1,78 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.text.startup,"ax",@progbits
+  11               	.global	main
+  13               	main:
+  14               	.LFB0:
+  15               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** 
+   3:main.c        **** #define BUTTON PD0
+   4:main.c        **** #define BUTTONDIR DDRD
+   5:main.c        **** #define BUTTONPULLUP PORTD
+   6:main.c        **** #define BUTTONPIN PIND
+   7:main.c        **** #define LED PC7
+   8:main.c        **** #define LEDDIR DDRC
+   9:main.c        **** #define LEDPORT PORTC
+  10:main.c        **** 
+  11:main.c        **** int main(void){
+  16               		.loc 1 11 0
+  17               		.cfi_startproc
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  12:main.c        **** 	/*DDRC = 0xff; //225 //(1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5) //0b11111111
+  13:main.c        **** 	PORTC = 0x55;*/
+  14:main.c        **** 	LEDDIR = (1<<LED);
+  22               		.loc 1 14 0
+  23 0000 80E8      		ldi r24,lo8(-128)
+  24 0002 84BB      		out 0x14,r24
+  15:main.c        **** 	LEDPORT = (1<<LED);
+  25               		.loc 1 15 0
+  26 0004 85BB      		out 0x15,r24
+  16:main.c        **** 	
+  17:main.c        **** 	BUTTONDIR &=~(1<<BUTTON);
+  27               		.loc 1 17 0
+  28 0006 8898      		cbi 0x11,0
+  18:main.c        **** 	BUTTONPULLUP |= (1<<BUTTON);
+  29               		.loc 1 18 0
+  30 0008 909A      		sbi 0x12,0
+  31               	.L2:
+  19:main.c        **** 	while(1){
+  20:main.c        **** 		if (!(BUTTONPIN & (1<<BUTTON))) {
+  32               		.loc 1 20 0
+  33 000a 8099      		sbic 0x10,0
+  34 000c 00C0      		rjmp .L3
+  21:main.c        **** 			LEDPORT&=~(1<<LED);  //zapal diode led
+  35               		.loc 1 21 0
+  36 000e AF98      		cbi 0x15,7
+  37 0010 00C0      		rjmp .L2
+  38               	.L3:
+  22:main.c        **** 		} else {
+  23:main.c        **** 			LEDPORT|=(1<<LED); //zgas diode led
+  39               		.loc 1 23 0
+  40 0012 AF9A      		sbi 0x15,7
+  41 0014 00C0      		rjmp .L2
+  42               		.cfi_endproc
+  43               	.LFE0:
+  45               		.text
+  46               	.Letext0:
+  47               		.file 2 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/cc236gS5.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc236gS5.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc236gS5.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc236gS5.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc236gS5.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc236gS5.s:13     .text.startup:0000000000000000 main
+
+NO UNDEFINED SYMBOLS
