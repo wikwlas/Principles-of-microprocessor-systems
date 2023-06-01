@@ -1,0 +1,1175 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.rodata.str1.1,"aMS",@progbits,1
+  11               	.LC0:
+  12 0000 5354 4F50 		.string	"STOP!"
+  12      2100 
+  13               	.LC1:
+  14 0006 2573 00   		.string	"%s"
+  15               		.text
+  16               	.global	stop
+  18               	stop:
+  19               	.LFB13:
+  20               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include <util/delay.h>
+   3:main.c        **** #include <avr/interrupt.h>
+   4:main.c        **** #include <stdio.h>
+   5:main.c        **** #include <stdlib.h>
+   6:main.c        **** #include <string.h>
+   7:main.c        **** #include "lcd.h"
+   8:main.c        **** #include "iwire.h"
+   9:main.c        **** #include "ds18b20.h"
+  10:main.c        **** #include "ff.h"
+  11:main.c        **** #include "rs232.h"
+  12:main.c        **** 
+  13:main.c        **** #define MAX_BUF 80
+  14:main.c        **** 
+  15:main.c        **** #define SWITCH PD7
+  16:main.c        **** #define SWITCH_DIR DDRD
+  17:main.c        **** #define SWITCH_PIN PIND
+  18:main.c        **** #define SWITCH_PORT PORTD
+  19:main.c        **** 
+  20:main.c        **** FATFS fs;
+  21:main.c        **** FIL fil;
+  22:main.c        **** FRESULT fresult;
+  23:main.c        **** 
+  24:main.c        **** char buf[MAX_BUF];
+  25:main.c        **** volatile double temp;
+  26:main.c        **** 
+  27:main.c        **** char prefix[]="data";
+  28:main.c        **** char suffix[]=".txt";
+  29:main.c        **** 
+  30:main.c        **** ISR(TIMER1_COMPA_vect)
+  31:main.c        **** {
+  32:main.c        **** 	int16_t temperature;
+  33:main.c        **** 	static uint32_t num=0;
+  34:main.c        **** 	uint16_t bytes;
+  35:main.c        **** 	uint16_t slen;
+  36:main.c        **** 	
+  37:main.c        **** 	DS18B20_start();
+  38:main.c        **** 	while(!OW_check);
+  39:main.c        **** 	temperature = DS18B20_read();
+  40:main.c        **** 	temp = ((double) temperature)*0.0625;
+  41:main.c        **** 	
+  42:main.c        **** 	lcd_set_xy(0,0);
+  43:main.c        **** 	printf("T=%5.1f \337C", temp);
+  44:main.c        **** 	
+  45:main.c        **** 	num++;
+  46:main.c        **** 	sprintf(buf, "%ld \t %5.1f \r\n", num, temp);
+  47:main.c        **** 	slen= strlen(buf);
+  48:main.c        **** 	fresult = f_write(&fil, buf, slen, &bytes);
+  49:main.c        **** 	if(fresult!=FR_OK) stop("Error writing file");
+  50:main.c        **** 	if (bytes!=slen) stop("Cannot write complete data");
+  51:main.c        **** 	f_sync(&fil);
+  52:main.c        **** }
+  53:main.c        **** 
+  54:main.c        **** void stop(char *s)
+  55:main.c        **** {
+  21               		.loc 1 55 0
+  22               		.cfi_startproc
+  23               	.LVL0:
+  24               	/* prologue: function */
+  25               	/* frame size = 0 */
+  26               	/* stack size = 0 */
+  27               	.L__stack_usage = 0
+  28 0000 EC01      		movw r28,r24
+  56:main.c        **** 	lcd_clear();
+  29               		.loc 1 56 0
+  30 0002 0E94 0000 		call lcd_clear
+  31               	.LVL1:
+  57:main.c        **** 	lcd_set_xy(0,0);
+  32               		.loc 1 57 0
+  33 0006 60E0      		ldi r22,0
+  34 0008 80E0      		ldi r24,0
+  35 000a 0E94 0000 		call lcd_set_xy
+  36               	.LVL2:
+  58:main.c        **** 	printf("STOP!");
+  37               		.loc 1 58 0
+  38 000e 80E0      		ldi r24,lo8(.LC0)
+  39 0010 90E0      		ldi r25,hi8(.LC0)
+  40 0012 9F93      		push r25
+  41               	.LCFI0:
+  42               		.cfi_def_cfa_offset 3
+  43 0014 8F93      		push r24
+  44               	.LCFI1:
+  45               		.cfi_def_cfa_offset 4
+  46 0016 0E94 0000 		call printf
+  47               	.LVL3:
+  59:main.c        **** 	lcd_set_xy(0,1);
+  48               		.loc 1 59 0
+  49 001a 61E0      		ldi r22,lo8(1)
+  50 001c 80E0      		ldi r24,0
+  51 001e 0E94 0000 		call lcd_set_xy
+  52               	.LVL4:
+  60:main.c        **** 	printf("%s",s);
+  53               		.loc 1 60 0
+  54 0022 DF93      		push r29
+  55               	.LCFI2:
+  56               		.cfi_def_cfa_offset 5
+  57 0024 CF93      		push r28
+  58               	.LCFI3:
+  59               		.cfi_def_cfa_offset 6
+  60 0026 80E0      		ldi r24,lo8(.LC1)
+  61 0028 90E0      		ldi r25,hi8(.LC1)
+  62 002a 9F93      		push r25
+  63               	.LCFI4:
+  64               		.cfi_def_cfa_offset 7
+  65 002c 8F93      		push r24
+  66               	.LCFI5:
+  67               		.cfi_def_cfa_offset 8
+  68 002e 0E94 0000 		call printf
+  69               	.LVL5:
+  70 0032 0F90      		pop __tmp_reg__
+  71 0034 0F90      		pop __tmp_reg__
+  72 0036 0F90      		pop __tmp_reg__
+  73 0038 0F90      		pop __tmp_reg__
+  74 003a 0F90      		pop __tmp_reg__
+  75 003c 0F90      		pop __tmp_reg__
+  76               	.LCFI6:
+  77               		.cfi_def_cfa_offset 2
+  78               	.L2:
+  79 003e 00C0      		rjmp .L2
+  80               		.cfi_endproc
+  81               	.LFE13:
+  83               	.global	__floatsisf
+  84               	.global	__mulsf3
+  85               		.section	.rodata.str1.1
+  86               	.LC2:
+  87 0009 543D 2535 		.string	"T=%5.1f \337C"
+  87      2E31 6620 
+  87      DF43 00
+  88               	.LC3:
+  89 0014 256C 6420 		.string	"%ld \t %5.1f \r\n"
+  89      0920 2535 
+  89      2E31 6620 
+  89      0D0A 00
+  90               	.LC4:
+  91 0023 4572 726F 		.string	"Error writing file"
+  91      7220 7772 
+  91      6974 696E 
+  91      6720 6669 
+  91      6C65 00
+  92               	.LC5:
+  93 0036 4361 6E6E 		.string	"Cannot write complete data"
+  93      6F74 2077 
+  93      7269 7465 
+  93      2063 6F6D 
+  93      706C 6574 
+  94               		.text
+  95               	.global	__vector_7
+  97               	__vector_7:
+  98               	.LFB12:
+  31:main.c        **** 	int16_t temperature;
+  99               		.loc 1 31 0
+ 100               		.cfi_startproc
+ 101 0040 1F92      		push r1
+ 102               	.LCFI7:
+ 103               		.cfi_def_cfa_offset 3
+ 104               		.cfi_offset 1, -2
+ 105 0042 0F92      		push r0
+ 106               	.LCFI8:
+ 107               		.cfi_def_cfa_offset 4
+ 108               		.cfi_offset 0, -3
+ 109 0044 0FB6      		in r0,__SREG__
+ 110 0046 0F92      		push r0
+ 111 0048 1124      		clr __zero_reg__
+ 112 004a 0F93      		push r16
+ 113               	.LCFI9:
+ 114               		.cfi_def_cfa_offset 5
+ 115               		.cfi_offset 16, -4
+ 116 004c 1F93      		push r17
+ 117               	.LCFI10:
+ 118               		.cfi_def_cfa_offset 6
+ 119               		.cfi_offset 17, -5
+ 120 004e 2F93      		push r18
+ 121               	.LCFI11:
+ 122               		.cfi_def_cfa_offset 7
+ 123               		.cfi_offset 18, -6
+ 124 0050 3F93      		push r19
+ 125               	.LCFI12:
+ 126               		.cfi_def_cfa_offset 8
+ 127               		.cfi_offset 19, -7
+ 128 0052 4F93      		push r20
+ 129               	.LCFI13:
+ 130               		.cfi_def_cfa_offset 9
+ 131               		.cfi_offset 20, -8
+ 132 0054 5F93      		push r21
+ 133               	.LCFI14:
+ 134               		.cfi_def_cfa_offset 10
+ 135               		.cfi_offset 21, -9
+ 136 0056 6F93      		push r22
+ 137               	.LCFI15:
+ 138               		.cfi_def_cfa_offset 11
+ 139               		.cfi_offset 22, -10
+ 140 0058 7F93      		push r23
+ 141               	.LCFI16:
+ 142               		.cfi_def_cfa_offset 12
+ 143               		.cfi_offset 23, -11
+ 144 005a 8F93      		push r24
+ 145               	.LCFI17:
+ 146               		.cfi_def_cfa_offset 13
+ 147               		.cfi_offset 24, -12
+ 148 005c 9F93      		push r25
+ 149               	.LCFI18:
+ 150               		.cfi_def_cfa_offset 14
+ 151               		.cfi_offset 25, -13
+ 152 005e AF93      		push r26
+ 153               	.LCFI19:
+ 154               		.cfi_def_cfa_offset 15
+ 155               		.cfi_offset 26, -14
+ 156 0060 BF93      		push r27
+ 157               	.LCFI20:
+ 158               		.cfi_def_cfa_offset 16
+ 159               		.cfi_offset 27, -15
+ 160 0062 EF93      		push r30
+ 161               	.LCFI21:
+ 162               		.cfi_def_cfa_offset 17
+ 163               		.cfi_offset 30, -16
+ 164 0064 FF93      		push r31
+ 165               	.LCFI22:
+ 166               		.cfi_def_cfa_offset 18
+ 167               		.cfi_offset 31, -17
+ 168 0066 CF93      		push r28
+ 169               	.LCFI23:
+ 170               		.cfi_def_cfa_offset 19
+ 171               		.cfi_offset 28, -18
+ 172 0068 DF93      		push r29
+ 173               	.LCFI24:
+ 174               		.cfi_def_cfa_offset 20
+ 175               		.cfi_offset 29, -19
+ 176 006a 00D0      		rcall .
+ 177               	.LCFI25:
+ 178               		.cfi_def_cfa_offset 22
+ 179 006c CDB7      		in r28,__SP_L__
+ 180 006e DEB7      		in r29,__SP_H__
+ 181               	.LCFI26:
+ 182               		.cfi_def_cfa_register 28
+ 183               	/* prologue: Signal */
+ 184               	/* frame size = 2 */
+ 185               	/* stack size = 21 */
+ 186               	.L__stack_usage = 21
+  37:main.c        **** 	while(!OW_check);
+ 187               		.loc 1 37 0
+ 188 0070 0E94 0000 		call DS18B20_start
+ 189               	.LVL6:
+ 190               	.L5:
+  38:main.c        **** 	temperature = DS18B20_read();
+ 191               		.loc 1 38 0 discriminator 1
+ 192 0074 B39B      		sbis 0x16,3
+ 193 0076 00C0      		rjmp .L5
+  39:main.c        **** 	temp = ((double) temperature)*0.0625;
+ 194               		.loc 1 39 0
+ 195 0078 0E94 0000 		call DS18B20_read
+ 196               	.LVL7:
+  40:main.c        **** 	
+ 197               		.loc 1 40 0
+ 198 007c BC01      		movw r22,r24
+ 199 007e 990F      		lsl r25
+ 200 0080 880B      		sbc r24,r24
+ 201 0082 990B      		sbc r25,r25
+ 202 0084 0E94 0000 		call __floatsisf
+ 203               	.LVL8:
+ 204 0088 20E0      		ldi r18,0
+ 205 008a 30E0      		ldi r19,0
+ 206 008c 40E8      		ldi r20,lo8(-128)
+ 207 008e 5DE3      		ldi r21,lo8(61)
+ 208 0090 0E94 0000 		call __mulsf3
+ 209               	.LVL9:
+ 210 0094 6093 0000 		sts temp,r22
+ 211 0098 7093 0000 		sts temp+1,r23
+ 212 009c 8093 0000 		sts temp+2,r24
+ 213 00a0 9093 0000 		sts temp+3,r25
+  42:main.c        **** 	printf("T=%5.1f \337C", temp);
+ 214               		.loc 1 42 0
+ 215 00a4 60E0      		ldi r22,0
+ 216 00a6 80E0      		ldi r24,0
+ 217 00a8 0E94 0000 		call lcd_set_xy
+ 218               	.LVL10:
+  43:main.c        **** 	
+ 219               		.loc 1 43 0
+ 220 00ac 8091 0000 		lds r24,temp
+ 221 00b0 9091 0000 		lds r25,temp+1
+ 222 00b4 A091 0000 		lds r26,temp+2
+ 223 00b8 B091 0000 		lds r27,temp+3
+ 224 00bc BF93      		push r27
+ 225 00be AF93      		push r26
+ 226 00c0 9F93      		push r25
+ 227 00c2 8F93      		push r24
+ 228 00c4 80E0      		ldi r24,lo8(.LC2)
+ 229 00c6 90E0      		ldi r25,hi8(.LC2)
+ 230 00c8 9F93      		push r25
+ 231 00ca 8F93      		push r24
+ 232 00cc 0E94 0000 		call printf
+ 233               	.LVL11:
+  45:main.c        **** 	sprintf(buf, "%ld \t %5.1f \r\n", num, temp);
+ 234               		.loc 1 45 0
+ 235 00d0 8091 0000 		lds r24,num.2644
+ 236 00d4 9091 0000 		lds r25,num.2644+1
+ 237 00d8 A091 0000 		lds r26,num.2644+2
+ 238 00dc B091 0000 		lds r27,num.2644+3
+ 239 00e0 0196      		adiw r24,1
+ 240 00e2 A11D      		adc r26,__zero_reg__
+ 241 00e4 B11D      		adc r27,__zero_reg__
+ 242 00e6 8093 0000 		sts num.2644,r24
+ 243 00ea 9093 0000 		sts num.2644+1,r25
+ 244 00ee A093 0000 		sts num.2644+2,r26
+ 245 00f2 B093 0000 		sts num.2644+3,r27
+  46:main.c        **** 	slen= strlen(buf);
+ 246               		.loc 1 46 0
+ 247 00f6 4091 0000 		lds r20,temp
+ 248 00fa 5091 0000 		lds r21,temp+1
+ 249 00fe 6091 0000 		lds r22,temp+2
+ 250 0102 7091 0000 		lds r23,temp+3
+ 251 0106 7F93      		push r23
+ 252 0108 6F93      		push r22
+ 253 010a 5F93      		push r21
+ 254 010c 4F93      		push r20
+ 255 010e BF93      		push r27
+ 256 0110 AF93      		push r26
+ 257 0112 9F93      		push r25
+ 258 0114 8F93      		push r24
+ 259 0116 80E0      		ldi r24,lo8(.LC3)
+ 260 0118 90E0      		ldi r25,hi8(.LC3)
+ 261 011a 9F93      		push r25
+ 262 011c 8F93      		push r24
+ 263 011e 00E0      		ldi r16,lo8(buf)
+ 264 0120 10E0      		ldi r17,hi8(buf)
+ 265 0122 1F93      		push r17
+ 266 0124 0F93      		push r16
+ 267 0126 0E94 0000 		call sprintf
+ 268               	.LVL12:
+  47:main.c        **** 	fresult = f_write(&fil, buf, slen, &bytes);
+ 269               		.loc 1 47 0
+ 270 012a F801      		movw r30,r16
+ 271               		0:
+ 272 012c 0190      		ld __tmp_reg__,Z+
+ 273 012e 0020      		tst __tmp_reg__
+ 274 0130 01F4      		brne 0b
+ 275 0132 3197      		sbiw r30,1
+ 276 0134 8F01      		movw r16,r30
+ 277 0136 0050      		subi r16,lo8(buf)
+ 278 0138 1040      		sbci r17,hi8(buf)
+ 279               	.LVL13:
+  48:main.c        **** 	if(fresult!=FR_OK) stop("Error writing file");
+ 280               		.loc 1 48 0
+ 281 013a 9E01      		movw r18,r28
+ 282 013c 2F5F      		subi r18,-1
+ 283 013e 3F4F      		sbci r19,-1
+ 284 0140 A801      		movw r20,r16
+ 285 0142 60E0      		ldi r22,lo8(buf)
+ 286 0144 70E0      		ldi r23,hi8(buf)
+ 287 0146 80E0      		ldi r24,lo8(fil)
+ 288 0148 90E0      		ldi r25,hi8(fil)
+ 289 014a 0E94 0000 		call f_write
+ 290               	.LVL14:
+ 291 014e 8093 0000 		sts fresult,r24
+  49:main.c        **** 	if (bytes!=slen) stop("Cannot write complete data");
+ 292               		.loc 1 49 0
+ 293 0152 0FB6      		in __tmp_reg__,__SREG__
+ 294 0154 F894      		cli
+ 295 0156 DEBF      		out __SP_H__,r29
+ 296 0158 0FBE      		out __SREG__,__tmp_reg__
+ 297 015a CDBF      		out __SP_L__,r28
+ 298 015c 8823      		tst r24
+ 299 015e 01F0      		breq .L6
+ 300               	.LBB12:
+  49:main.c        **** 	if (bytes!=slen) stop("Cannot write complete data");
+ 301               		.loc 1 49 0 is_stmt 0 discriminator 1
+ 302 0160 80E0      		ldi r24,lo8(.LC4)
+ 303 0162 90E0      		ldi r25,hi8(.LC4)
+ 304 0164 00C0      		rjmp .L10
+ 305               	.L6:
+ 306               	.LBE12:
+  50:main.c        **** 	f_sync(&fil);
+ 307               		.loc 1 50 0 is_stmt 1
+ 308 0166 8981      		ldd r24,Y+1
+ 309 0168 9A81      		ldd r25,Y+2
+ 310 016a 0817      		cp r16,r24
+ 311 016c 1907      		cpc r17,r25
+ 312 016e 01F0      		breq .L7
+ 313               	.LBB13:
+  50:main.c        **** 	f_sync(&fil);
+ 314               		.loc 1 50 0 is_stmt 0 discriminator 1
+ 315 0170 80E0      		ldi r24,lo8(.LC5)
+ 316 0172 90E0      		ldi r25,hi8(.LC5)
+ 317               	.L10:
+ 318 0174 0E94 0000 		call stop
+ 319               	.LVL15:
+ 320               	.L7:
+ 321               	.LBE13:
+  51:main.c        **** }
+ 322               		.loc 1 51 0 is_stmt 1
+ 323 0178 80E0      		ldi r24,lo8(fil)
+ 324 017a 90E0      		ldi r25,hi8(fil)
+ 325 017c 0E94 0000 		call f_sync
+ 326               	.LVL16:
+ 327               	/* epilogue start */
+  52:main.c        **** 
+ 328               		.loc 1 52 0
+ 329 0180 0F90      		pop __tmp_reg__
+ 330 0182 0F90      		pop __tmp_reg__
+ 331 0184 DF91      		pop r29
+ 332 0186 CF91      		pop r28
+ 333 0188 FF91      		pop r31
+ 334 018a EF91      		pop r30
+ 335 018c BF91      		pop r27
+ 336 018e AF91      		pop r26
+ 337 0190 9F91      		pop r25
+ 338 0192 8F91      		pop r24
+ 339 0194 7F91      		pop r23
+ 340 0196 6F91      		pop r22
+ 341 0198 5F91      		pop r21
+ 342 019a 4F91      		pop r20
+ 343 019c 3F91      		pop r19
+ 344 019e 2F91      		pop r18
+ 345 01a0 1F91      		pop r17
+ 346 01a2 0F91      		pop r16
+ 347               	.LVL17:
+ 348 01a4 0F90      		pop r0
+ 349 01a6 0FBE      		out __SREG__,r0
+ 350 01a8 0F90      		pop r0
+ 351 01aa 1F90      		pop r1
+ 352 01ac 1895      		reti
+ 353               		.cfi_endproc
+ 354               	.LFE12:
+ 356               		.section	.rodata.str1.1
+ 357               	.LC6:
+ 358 0051 4C6F 6767 		.string	"Logger temp"
+ 358      6572 2074 
+ 358      656D 7000 
+ 359               	.LC7:
+ 360 005d 00        		.string	""
+ 361               	.LC8:
+ 362 005e 6D6F 756E 		.string	"mount error"
+ 362      7420 6572 
+ 362      726F 7200 
+ 363               	.LC9:
+ 364 006a 6D6F 756E 		.string	"mounted"
+ 364      7465 6400 
+ 365               	.LC10:
+ 366 0072 2564 00   		.string	"%d"
+ 367               	.LC11:
+ 368 0075 6669 6C65 		.string	"file created"
+ 368      2063 7265 
+ 368      6174 6564 
+ 368      00
+ 369               	.LC12:
+ 370 0082 4572 726F 		.string	"Error creat. file"
+ 370      7220 6372 
+ 370      6561 742E 
+ 370      2066 696C 
+ 370      6500 
+ 371               	.LC13:
+ 372 0094 4F4B 2046 		.string	"OK File closed"
+ 372      696C 6520 
+ 372      636C 6F73 
+ 372      6564 00
+ 373               		.section	.text.startup,"ax",@progbits
+ 374               	.global	main
+ 376               	main:
+ 377               	.LFB14:
+  61:main.c        **** 	while(1);
+  62:main.c        **** }
+  63:main.c        **** 
+  64:main.c        **** int main(void)
+  65:main.c        **** {
+ 378               		.loc 1 65 0
+ 379               		.cfi_startproc
+ 380               	/* prologue: function */
+ 381               	/* frame size = 0 */
+ 382               	/* stack size = 0 */
+ 383               	.L__stack_usage = 0
+ 384               	.LVL18:
+  66:main.c        **** 	uint16_t num2=0;
+  67:main.c        **** 	uint8_t position=0;
+  68:main.c        **** 	
+  69:main.c        **** 	SWITCH_DIR&= ~(1<<SWITCH);
+ 385               		.loc 1 69 0
+ 386 0000 8F98      		cbi 0x11,7
+  70:main.c        **** 	SWITCH_PORT|=(1<<SWITCH);
+ 387               		.loc 1 70 0
+ 388 0002 979A      		sbi 0x12,7
+  71:main.c        **** 	
+  72:main.c        **** 	lcdinit();
+ 389               		.loc 1 72 0
+ 390 0004 0E94 0000 		call lcdinit
+ 391               	.LVL19:
+  73:main.c        **** 	printf("Logger temp");
+ 392               		.loc 1 73 0
+ 393 0008 80E0      		ldi r24,lo8(.LC6)
+ 394 000a 90E0      		ldi r25,hi8(.LC6)
+ 395 000c 9F93      		push r25
+ 396               	.LCFI27:
+ 397               		.cfi_def_cfa_offset 3
+ 398 000e 8F93      		push r24
+ 399               	.LCFI28:
+ 400               		.cfi_def_cfa_offset 4
+ 401 0010 0E94 0000 		call printf
+ 402               	.LVL20:
+  74:main.c        **** 	
+  75:main.c        **** 	DS18B20_init();
+ 403               		.loc 1 75 0
+ 404 0014 0E94 0000 		call DS18B20_init
+ 405               	.LVL21:
+ 406               	.LBB14:
+ 407               	.LBB15:
+ 408               		.file 2 "/usr/lib/avr/include/util/delay.h"
+   1:/usr/lib/avr/include/util/delay.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:/usr/lib/avr/include/util/delay.h ****    Copyright (c) 2004,2005,2007 Joerg Wunsch
+   3:/usr/lib/avr/include/util/delay.h ****    Copyright (c) 2007  Florin-Viorel Petrov
+   4:/usr/lib/avr/include/util/delay.h ****    All rights reserved.
+   5:/usr/lib/avr/include/util/delay.h **** 
+   6:/usr/lib/avr/include/util/delay.h ****    Redistribution and use in source and binary forms, with or without
+   7:/usr/lib/avr/include/util/delay.h ****    modification, are permitted provided that the following conditions are met:
+   8:/usr/lib/avr/include/util/delay.h **** 
+   9:/usr/lib/avr/include/util/delay.h ****    * Redistributions of source code must retain the above copyright
+  10:/usr/lib/avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer.
+  11:/usr/lib/avr/include/util/delay.h **** 
+  12:/usr/lib/avr/include/util/delay.h ****    * Redistributions in binary form must reproduce the above copyright
+  13:/usr/lib/avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer in
+  14:/usr/lib/avr/include/util/delay.h ****      the documentation and/or other materials provided with the
+  15:/usr/lib/avr/include/util/delay.h ****      distribution.
+  16:/usr/lib/avr/include/util/delay.h **** 
+  17:/usr/lib/avr/include/util/delay.h ****    * Neither the name of the copyright holders nor the names of
+  18:/usr/lib/avr/include/util/delay.h ****      contributors may be used to endorse or promote products derived
+  19:/usr/lib/avr/include/util/delay.h ****      from this software without specific prior written permission.
+  20:/usr/lib/avr/include/util/delay.h **** 
+  21:/usr/lib/avr/include/util/delay.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  22:/usr/lib/avr/include/util/delay.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  23:/usr/lib/avr/include/util/delay.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  24:/usr/lib/avr/include/util/delay.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  25:/usr/lib/avr/include/util/delay.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  26:/usr/lib/avr/include/util/delay.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  27:/usr/lib/avr/include/util/delay.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  28:/usr/lib/avr/include/util/delay.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  29:/usr/lib/avr/include/util/delay.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  30:/usr/lib/avr/include/util/delay.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  31:/usr/lib/avr/include/util/delay.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  32:/usr/lib/avr/include/util/delay.h **** 
+  33:/usr/lib/avr/include/util/delay.h **** /* $Id$ */
+  34:/usr/lib/avr/include/util/delay.h **** 
+  35:/usr/lib/avr/include/util/delay.h **** #ifndef _UTIL_DELAY_H_
+  36:/usr/lib/avr/include/util/delay.h **** #define _UTIL_DELAY_H_ 1
+  37:/usr/lib/avr/include/util/delay.h **** 
+  38:/usr/lib/avr/include/util/delay.h **** #ifndef __DOXYGEN__
+  39:/usr/lib/avr/include/util/delay.h **** #  ifndef __HAS_DELAY_CYCLES
+  40:/usr/lib/avr/include/util/delay.h **** #    define __HAS_DELAY_CYCLES 1
+  41:/usr/lib/avr/include/util/delay.h **** #  endif
+  42:/usr/lib/avr/include/util/delay.h **** #endif  /* __DOXYGEN__ */
+  43:/usr/lib/avr/include/util/delay.h **** 
+  44:/usr/lib/avr/include/util/delay.h **** #include <inttypes.h>
+  45:/usr/lib/avr/include/util/delay.h **** #include <util/delay_basic.h>
+  46:/usr/lib/avr/include/util/delay.h **** #include <math.h>
+  47:/usr/lib/avr/include/util/delay.h **** 
+  48:/usr/lib/avr/include/util/delay.h **** /** \file */
+  49:/usr/lib/avr/include/util/delay.h **** /** \defgroup util_delay <util/delay.h>: Convenience functions for busy-wait delay loops
+  50:/usr/lib/avr/include/util/delay.h ****     \code
+  51:/usr/lib/avr/include/util/delay.h ****     #define F_CPU 1000000UL  // 1 MHz
+  52:/usr/lib/avr/include/util/delay.h ****     //#define F_CPU 14.7456E6
+  53:/usr/lib/avr/include/util/delay.h ****     #include <util/delay.h>
+  54:/usr/lib/avr/include/util/delay.h ****     \endcode
+  55:/usr/lib/avr/include/util/delay.h **** 
+  56:/usr/lib/avr/include/util/delay.h ****     \note As an alternative method, it is possible to pass the
+  57:/usr/lib/avr/include/util/delay.h ****     F_CPU macro down to the compiler from the Makefile.
+  58:/usr/lib/avr/include/util/delay.h ****     Obviously, in that case, no \c \#define statement should be
+  59:/usr/lib/avr/include/util/delay.h ****     used.
+  60:/usr/lib/avr/include/util/delay.h **** 
+  61:/usr/lib/avr/include/util/delay.h ****     The functions in this header file are wrappers around the basic
+  62:/usr/lib/avr/include/util/delay.h ****     busy-wait functions from <util/delay_basic.h>.  They are meant as
+  63:/usr/lib/avr/include/util/delay.h ****     convenience functions where actual time values can be specified
+  64:/usr/lib/avr/include/util/delay.h ****     rather than a number of cycles to wait for.  The idea behind is
+  65:/usr/lib/avr/include/util/delay.h ****     that compile-time constant expressions will be eliminated by
+  66:/usr/lib/avr/include/util/delay.h ****     compiler optimization so floating-point expressions can be used
+  67:/usr/lib/avr/include/util/delay.h ****     to calculate the number of delay cycles needed based on the CPU
+  68:/usr/lib/avr/include/util/delay.h ****     frequency passed by the macro F_CPU.
+  69:/usr/lib/avr/include/util/delay.h **** 
+  70:/usr/lib/avr/include/util/delay.h ****     \note In order for these functions to work as intended, compiler
+  71:/usr/lib/avr/include/util/delay.h ****     optimizations <em>must</em> be enabled, and the delay time
+  72:/usr/lib/avr/include/util/delay.h ****     <em>must</em> be an expression that is a known constant at
+  73:/usr/lib/avr/include/util/delay.h ****     compile-time.  If these requirements are not met, the resulting
+  74:/usr/lib/avr/include/util/delay.h ****     delay will be much longer (and basically unpredictable), and
+  75:/usr/lib/avr/include/util/delay.h ****     applications that otherwise do not use floating-point calculations
+  76:/usr/lib/avr/include/util/delay.h ****     will experience severe code bloat by the floating-point library
+  77:/usr/lib/avr/include/util/delay.h ****     routines linked into the application.
+  78:/usr/lib/avr/include/util/delay.h **** 
+  79:/usr/lib/avr/include/util/delay.h ****     The functions available allow the specification of microsecond, and
+  80:/usr/lib/avr/include/util/delay.h ****     millisecond delays directly, using the application-supplied macro
+  81:/usr/lib/avr/include/util/delay.h ****     F_CPU as the CPU clock frequency (in Hertz).
+  82:/usr/lib/avr/include/util/delay.h **** 
+  83:/usr/lib/avr/include/util/delay.h **** */
+  84:/usr/lib/avr/include/util/delay.h **** 
+  85:/usr/lib/avr/include/util/delay.h **** #if !defined(__DOXYGEN__)
+  86:/usr/lib/avr/include/util/delay.h **** static __inline__ void _delay_us(double __us) __attribute__((__always_inline__));
+  87:/usr/lib/avr/include/util/delay.h **** static __inline__ void _delay_ms(double __ms) __attribute__((__always_inline__));
+  88:/usr/lib/avr/include/util/delay.h **** #endif
+  89:/usr/lib/avr/include/util/delay.h **** 
+  90:/usr/lib/avr/include/util/delay.h **** #ifndef F_CPU
+  91:/usr/lib/avr/include/util/delay.h **** /* prevent compiler error by supplying a default */
+  92:/usr/lib/avr/include/util/delay.h **** # warning "F_CPU not defined for <util/delay.h>"
+  93:/usr/lib/avr/include/util/delay.h **** /** \ingroup util_delay
+  94:/usr/lib/avr/include/util/delay.h ****     \def F_CPU
+  95:/usr/lib/avr/include/util/delay.h ****     \brief CPU frequency in Hz
+  96:/usr/lib/avr/include/util/delay.h **** 
+  97:/usr/lib/avr/include/util/delay.h ****     The macro F_CPU specifies the CPU frequency to be considered by
+  98:/usr/lib/avr/include/util/delay.h ****     the delay macros.  This macro is normally supplied by the
+  99:/usr/lib/avr/include/util/delay.h ****     environment (e.g. from within a project header, or the project's
+ 100:/usr/lib/avr/include/util/delay.h ****     Makefile).  The value 1 MHz here is only provided as a "vanilla"
+ 101:/usr/lib/avr/include/util/delay.h ****     fallback if no such user-provided definition could be found.
+ 102:/usr/lib/avr/include/util/delay.h **** 
+ 103:/usr/lib/avr/include/util/delay.h ****     In terms of the delay functions, the CPU frequency can be given as
+ 104:/usr/lib/avr/include/util/delay.h ****     a floating-point constant (e.g. 3.6864E6 for 3.6864 MHz).
+ 105:/usr/lib/avr/include/util/delay.h ****     However, the macros in <util/setbaud.h> require it to be an
+ 106:/usr/lib/avr/include/util/delay.h ****     integer value.
+ 107:/usr/lib/avr/include/util/delay.h ****  */
+ 108:/usr/lib/avr/include/util/delay.h **** # define F_CPU 1000000UL
+ 109:/usr/lib/avr/include/util/delay.h **** #endif
+ 110:/usr/lib/avr/include/util/delay.h **** 
+ 111:/usr/lib/avr/include/util/delay.h **** #ifndef __OPTIMIZE__
+ 112:/usr/lib/avr/include/util/delay.h **** # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+ 113:/usr/lib/avr/include/util/delay.h **** #endif
+ 114:/usr/lib/avr/include/util/delay.h **** 
+ 115:/usr/lib/avr/include/util/delay.h **** #if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) && \
+ 116:/usr/lib/avr/include/util/delay.h ****   !defined(__DELAY_BACKWARD_COMPATIBLE__) &&	   \
+ 117:/usr/lib/avr/include/util/delay.h ****   __STDC_HOSTED__
+ 118:/usr/lib/avr/include/util/delay.h **** #  include <math.h>
+ 119:/usr/lib/avr/include/util/delay.h **** #endif
+ 120:/usr/lib/avr/include/util/delay.h **** 
+ 121:/usr/lib/avr/include/util/delay.h **** /**
+ 122:/usr/lib/avr/include/util/delay.h ****    \ingroup util_delay
+ 123:/usr/lib/avr/include/util/delay.h **** 
+ 124:/usr/lib/avr/include/util/delay.h ****    Perform a delay of \c __ms milliseconds, using _delay_loop_2().
+ 125:/usr/lib/avr/include/util/delay.h **** 
+ 126:/usr/lib/avr/include/util/delay.h ****    The macro F_CPU is supposed to be defined to a
+ 127:/usr/lib/avr/include/util/delay.h ****    constant defining the CPU clock frequency (in Hertz).
+ 128:/usr/lib/avr/include/util/delay.h **** 
+ 129:/usr/lib/avr/include/util/delay.h ****    The maximal possible delay is 262.14 ms / F_CPU in MHz.
+ 130:/usr/lib/avr/include/util/delay.h **** 
+ 131:/usr/lib/avr/include/util/delay.h ****    When the user request delay which exceed the maximum possible one,
+ 132:/usr/lib/avr/include/util/delay.h ****    _delay_ms() provides a decreased resolution functionality. In this
+ 133:/usr/lib/avr/include/util/delay.h ****    mode _delay_ms() will work with a resolution of 1/10 ms, providing
+ 134:/usr/lib/avr/include/util/delay.h ****    delays up to 6.5535 seconds (independent from CPU frequency).  The
+ 135:/usr/lib/avr/include/util/delay.h ****    user will not be informed about decreased resolution.
+ 136:/usr/lib/avr/include/util/delay.h **** 
+ 137:/usr/lib/avr/include/util/delay.h ****    If the avr-gcc toolchain has __builtin_avr_delay_cycles()
+ 138:/usr/lib/avr/include/util/delay.h ****    support, maximal possible delay is 4294967.295 ms/ F_CPU in MHz. For
+ 139:/usr/lib/avr/include/util/delay.h ****    values greater than the maximal possible delay, overflows results in
+ 140:/usr/lib/avr/include/util/delay.h ****    no delay i.e., 0ms.
+ 141:/usr/lib/avr/include/util/delay.h **** 
+ 142:/usr/lib/avr/include/util/delay.h ****    Conversion of \c __ms into clock cycles may not always result in
+ 143:/usr/lib/avr/include/util/delay.h ****    integer.  By default, the clock cycles rounded up to next
+ 144:/usr/lib/avr/include/util/delay.h ****    integer. This ensures that the user gets at least \c __ms
+ 145:/usr/lib/avr/include/util/delay.h ****    microseconds of delay.
+ 146:/usr/lib/avr/include/util/delay.h **** 
+ 147:/usr/lib/avr/include/util/delay.h ****    Alternatively, by defining the macro \c __DELAY_ROUND_DOWN__, or
+ 148:/usr/lib/avr/include/util/delay.h ****    \c __DELAY_ROUND_CLOSEST__, before including this header file, the
+ 149:/usr/lib/avr/include/util/delay.h ****    algorithm can be made to round down, or round to closest integer,
+ 150:/usr/lib/avr/include/util/delay.h ****    respectively.
+ 151:/usr/lib/avr/include/util/delay.h **** 
+ 152:/usr/lib/avr/include/util/delay.h ****    \note
+ 153:/usr/lib/avr/include/util/delay.h **** 
+ 154:/usr/lib/avr/include/util/delay.h ****    The implementation of _delay_ms() based on
+ 155:/usr/lib/avr/include/util/delay.h ****    __builtin_avr_delay_cycles() is not backward compatible with older
+ 156:/usr/lib/avr/include/util/delay.h ****    implementations.  In order to get functionality backward compatible
+ 157:/usr/lib/avr/include/util/delay.h ****    with previous versions, the macro \c "__DELAY_BACKWARD_COMPATIBLE__"
+ 158:/usr/lib/avr/include/util/delay.h ****    must be defined before including this header file. Also, the
+ 159:/usr/lib/avr/include/util/delay.h ****    backward compatible algorithm will be chosen if the code is
+ 160:/usr/lib/avr/include/util/delay.h ****    compiled in a <em>freestanding environment</em> (GCC option
+ 161:/usr/lib/avr/include/util/delay.h ****    \c -ffreestanding), as the math functions required for rounding are
+ 162:/usr/lib/avr/include/util/delay.h ****    not available to the compiler then.
+ 163:/usr/lib/avr/include/util/delay.h **** 
+ 164:/usr/lib/avr/include/util/delay.h ****  */
+ 165:/usr/lib/avr/include/util/delay.h **** void
+ 166:/usr/lib/avr/include/util/delay.h **** _delay_ms(double __ms)
+ 167:/usr/lib/avr/include/util/delay.h **** {
+ 168:/usr/lib/avr/include/util/delay.h **** 	double __tmp ;
+ 169:/usr/lib/avr/include/util/delay.h **** #if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) && \
+ 170:/usr/lib/avr/include/util/delay.h ****   !defined(__DELAY_BACKWARD_COMPATIBLE__) &&	   \
+ 171:/usr/lib/avr/include/util/delay.h ****   __STDC_HOSTED__
+ 172:/usr/lib/avr/include/util/delay.h **** 	uint32_t __ticks_dc;
+ 173:/usr/lib/avr/include/util/delay.h **** 	extern void __builtin_avr_delay_cycles(unsigned long);
+ 174:/usr/lib/avr/include/util/delay.h **** 	__tmp = ((F_CPU) / 1e3) * __ms;
+ 175:/usr/lib/avr/include/util/delay.h **** 
+ 176:/usr/lib/avr/include/util/delay.h **** 	#if defined(__DELAY_ROUND_DOWN__)
+ 177:/usr/lib/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)fabs(__tmp);
+ 178:/usr/lib/avr/include/util/delay.h **** 
+ 179:/usr/lib/avr/include/util/delay.h **** 	#elif defined(__DELAY_ROUND_CLOSEST__)
+ 180:/usr/lib/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(fabs(__tmp)+0.5);
+ 181:/usr/lib/avr/include/util/delay.h **** 
+ 182:/usr/lib/avr/include/util/delay.h **** 	#else
+ 183:/usr/lib/avr/include/util/delay.h **** 		//round up by default
+ 184:/usr/lib/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+ 185:/usr/lib/avr/include/util/delay.h **** 	#endif
+ 186:/usr/lib/avr/include/util/delay.h **** 
+ 187:/usr/lib/avr/include/util/delay.h **** 	__builtin_avr_delay_cycles(__ticks_dc);
+ 409               		.loc 2 187 0
+ 410 0018 2FEF      		ldi r18,lo8(3199999)
+ 411 001a 83ED      		ldi r24,hi8(3199999)
+ 412 001c 90E3      		ldi r25,hlo8(3199999)
+ 413 001e 2150      	1:	subi r18,1
+ 414 0020 8040      		sbci r24,0
+ 415 0022 9040      		sbci r25,0
+ 416 0024 01F4      		brne 1b
+ 417 0026 00C0      		rjmp .
+ 418 0028 0000      		nop
+ 419               	.LVL22:
+ 420               	.LBE15:
+ 421               	.LBE14:
+  76:main.c        **** 	_delay_ms(1000);
+  77:main.c        **** 	
+  78:main.c        **** 	DS18B20_start();
+ 422               		.loc 1 78 0
+ 423 002a 0E94 0000 		call DS18B20_start
+ 424               	.LVL23:
+  79:main.c        **** 	while (!OW_check);
+ 425               		.loc 1 79 0
+ 426 002e 0F90      		pop __tmp_reg__
+ 427 0030 0F90      		pop __tmp_reg__
+ 428               	.LCFI29:
+ 429               		.cfi_def_cfa_offset 2
+ 430               	.L12:
+ 431               		.loc 1 79 0 is_stmt 0 discriminator 1
+ 432 0032 B39B      		sbis 0x16,3
+ 433 0034 00C0      		rjmp .L12
+  80:main.c        **** 	DS18B20_read();
+ 434               		.loc 1 80 0 is_stmt 1
+ 435 0036 0E94 0000 		call DS18B20_read
+ 436               	.LVL24:
+  81:main.c        **** 	
+  82:main.c        **** 	lcd_clear();
+ 437               		.loc 1 82 0
+ 438 003a 0E94 0000 		call lcd_clear
+ 439               	.LVL25:
+  83:main.c        **** 	lcd_set_xy(0,0);
+ 440               		.loc 1 83 0
+ 441 003e 60E0      		ldi r22,0
+ 442 0040 80E0      		ldi r24,0
+ 443 0042 0E94 0000 		call lcd_set_xy
+ 444               	.LVL26:
+  84:main.c        **** 	
+  85:main.c        **** 	fresult = f_mount(&fs, "", 0);
+ 445               		.loc 1 85 0
+ 446 0046 40E0      		ldi r20,0
+ 447 0048 60E0      		ldi r22,lo8(.LC7)
+ 448 004a 70E0      		ldi r23,hi8(.LC7)
+ 449 004c 80E0      		ldi r24,lo8(fs)
+ 450 004e 90E0      		ldi r25,hi8(fs)
+ 451 0050 0E94 0000 		call f_mount
+ 452               	.LVL27:
+ 453 0054 8093 0000 		sts fresult,r24
+  86:main.c        **** 	if(fresult!=FR_OK) stop("mount error");
+ 454               		.loc 1 86 0
+ 455 0058 8823      		tst r24
+ 456 005a 01F0      		breq .L13
+ 457               		.loc 1 86 0 is_stmt 0 discriminator 1
+ 458 005c 80E0      		ldi r24,lo8(.LC8)
+ 459 005e 90E0      		ldi r25,hi8(.LC8)
+ 460 0060 00C0      		rjmp .L21
+ 461               	.L13:
+  87:main.c        **** 	else printf ("mounted");
+ 462               		.loc 1 87 0 is_stmt 1
+ 463 0062 80E0      		ldi r24,lo8(.LC9)
+ 464 0064 90E0      		ldi r25,hi8(.LC9)
+ 465 0066 9F93      		push r25
+ 466               	.LCFI30:
+ 467               		.cfi_def_cfa_offset 3
+ 468 0068 8F93      		push r24
+ 469               	.LCFI31:
+ 470               		.cfi_def_cfa_offset 4
+ 471 006a 0E94 0000 		call printf
+ 472               	.LVL28:
+ 473               	.LBB16:
+ 474               	.LBB17:
+ 475               		.loc 2 187 0
+ 476 006e 2FEF      		ldi r18,lo8(3199999)
+ 477 0070 83ED      		ldi r24,hi8(3199999)
+ 478 0072 90E3      		ldi r25,hlo8(3199999)
+ 479 0074 2150      	1:	subi r18,1
+ 480 0076 8040      		sbci r24,0
+ 481 0078 9040      		sbci r25,0
+ 482 007a 01F4      		brne 1b
+ 483 007c 00C0      		rjmp .
+ 484 007e 0000      		nop
+ 485               	.LVL29:
+ 486               	.LBE17:
+ 487               	.LBE16:
+  88:main.c        **** 	_delay_ms(1000);
+  89:main.c        **** 	
+  90:main.c        **** 	lcd_clear();
+ 488               		.loc 1 90 0
+ 489 0080 0E94 0000 		call lcd_clear
+ 490               	.LVL30:
+  91:main.c        **** 	lcd_set_xy(0,0);
+ 491               		.loc 1 91 0
+ 492 0084 60E0      		ldi r22,0
+ 493 0086 80E0      		ldi r24,0
+ 494 0088 0E94 0000 		call lcd_set_xy
+ 495               	.LVL31:
+ 496 008c 0F90      		pop __tmp_reg__
+ 497 008e 0F90      		pop __tmp_reg__
+ 498               	.LCFI32:
+ 499               		.cfi_def_cfa_offset 2
+  66:main.c        **** 	uint8_t position=0;
+ 500               		.loc 1 66 0
+ 501 0090 00E0      		ldi r16,0
+ 502 0092 10E0      		ldi r17,0
+  92:main.c        **** 	
+  93:main.c        **** 	while(1)
+  94:main.c        **** 	{
+  95:main.c        **** 		strcpy(buf, prefix);
+  96:main.c        **** 		position = strlen(buf);
+  97:main.c        **** 		sprintf(&buf[position], "%d", num2);
+ 503               		.loc 1 97 0
+ 504 0094 80E0      		ldi r24,lo8(.LC10)
+ 505 0096 E82E      		mov r14,r24
+ 506 0098 80E0      		ldi r24,hi8(.LC10)
+ 507 009a F82E      		mov r15,r24
+ 508               	.LVL32:
+ 509               	.L14:
+  95:main.c        **** 		position = strlen(buf);
+ 510               		.loc 1 95 0
+ 511 009c 60E0      		ldi r22,lo8(prefix)
+ 512 009e 70E0      		ldi r23,hi8(prefix)
+ 513 00a0 80E0      		ldi r24,lo8(buf)
+ 514 00a2 90E0      		ldi r25,hi8(buf)
+ 515 00a4 0E94 0000 		call strcpy
+ 516               	.LVL33:
+  96:main.c        **** 		sprintf(&buf[position], "%d", num2);
+ 517               		.loc 1 96 0
+ 518 00a8 C0E0      		ldi r28,lo8(buf)
+ 519 00aa D0E0      		ldi r29,hi8(buf)
+ 520 00ac FE01      		movw r30,r28
+ 521               		0:
+ 522 00ae 0190      		ld __tmp_reg__,Z+
+ 523 00b0 0020      		tst __tmp_reg__
+ 524 00b2 01F4      		brne 0b
+ 525 00b4 3197      		sbiw r30,1
+ 526 00b6 E050      		subi r30,lo8(buf)
+ 527 00b8 F040      		sbci r31,hi8(buf)
+ 528               	.LVL34:
+ 529               		.loc 1 97 0
+ 530 00ba 1F93      		push r17
+ 531               	.LCFI33:
+ 532               		.cfi_def_cfa_offset 3
+ 533 00bc 0F93      		push r16
+ 534               	.LCFI34:
+ 535               		.cfi_def_cfa_offset 4
+ 536 00be FF92      		push r15
+ 537               	.LCFI35:
+ 538               		.cfi_def_cfa_offset 5
+ 539 00c0 EF92      		push r14
+ 540               	.LCFI36:
+ 541               		.cfi_def_cfa_offset 6
+ 542 00c2 FF27      		clr r31
+ 543               	.LVL35:
+ 544 00c4 E050      		subi r30,lo8(-(buf))
+ 545 00c6 F040      		sbci r31,hi8(-(buf))
+ 546 00c8 FF93      		push r31
+ 547               	.LCFI37:
+ 548               		.cfi_def_cfa_offset 7
+ 549 00ca EF93      		push r30
+ 550               	.LCFI38:
+ 551               		.cfi_def_cfa_offset 8
+ 552 00cc 0E94 0000 		call sprintf
+ 553               	.LVL36:
+  98:main.c        **** 		position= strlen(buf);
+ 554               		.loc 1 98 0
+ 555 00d0 FE01      		movw r30,r28
+ 556               		0:
+ 557 00d2 0190      		ld __tmp_reg__,Z+
+ 558 00d4 0020      		tst __tmp_reg__
+ 559 00d6 01F4      		brne 0b
+ 560 00d8 3197      		sbiw r30,1
+ 561 00da CF01      		movw r24,r30
+ 562 00dc 8050      		subi r24,lo8(buf)
+ 563 00de 9040      		sbci r25,hi8(buf)
+ 564               	.LVL37:
+  99:main.c        **** 		strcpy(&buf[position], suffix);
+ 565               		.loc 1 99 0
+ 566 00e0 9927      		clr r25
+ 567               	.LVL38:
+ 568 00e2 60E0      		ldi r22,lo8(suffix)
+ 569 00e4 70E0      		ldi r23,hi8(suffix)
+ 570 00e6 8050      		subi r24,lo8(-(buf))
+ 571 00e8 9040      		sbci r25,hi8(-(buf))
+ 572 00ea 0E94 0000 		call strcpy
+ 573               	.LVL39:
+ 100:main.c        **** 		num2++;
+ 574               		.loc 1 100 0
+ 575 00ee 0F5F      		subi r16,-1
+ 576 00f0 1F4F      		sbci r17,-1
+ 577               	.LVL40:
+ 101:main.c        **** 		
+ 102:main.c        **** 		if(f_stat(buf, NULL)==FR_NO_FILE)
+ 578               		.loc 1 102 0
+ 579 00f2 60E0      		ldi r22,0
+ 580 00f4 70E0      		ldi r23,0
+ 581 00f6 CE01      		movw r24,r28
+ 582 00f8 0E94 0000 		call f_stat
+ 583               	.LVL41:
+ 584 00fc 0F90      		pop __tmp_reg__
+ 585 00fe 0F90      		pop __tmp_reg__
+ 586 0100 0F90      		pop __tmp_reg__
+ 587 0102 0F90      		pop __tmp_reg__
+ 588 0104 0F90      		pop __tmp_reg__
+ 589 0106 0F90      		pop __tmp_reg__
+ 590               	.LCFI39:
+ 591               		.cfi_def_cfa_offset 2
+ 592 0108 8430      		cpi r24,lo8(4)
+ 593 010a 01F4      		brne .L14
+ 103:main.c        **** 		{
+ 104:main.c        **** 			if(f_open(&fil, buf, FA_WRITE | FA_CREATE_ALWAYS)==FR_OK) 
+ 594               		.loc 1 104 0
+ 595 010c 4AE0      		ldi r20,lo8(10)
+ 596 010e BE01      		movw r22,r28
+ 597 0110 80E0      		ldi r24,lo8(fil)
+ 598 0112 90E0      		ldi r25,hi8(fil)
+ 599 0114 0E94 0000 		call f_open
+ 600               	.LVL42:
+ 601 0118 8111      		cpse r24,__zero_reg__
+ 602 011a 00C0      		rjmp .L15
+ 105:main.c        **** 			{
+ 106:main.c        **** 				printf("file created");
+ 603               		.loc 1 106 0
+ 604 011c 80E0      		ldi r24,lo8(.LC11)
+ 605 011e 90E0      		ldi r25,hi8(.LC11)
+ 606 0120 9F93      		push r25
+ 607               	.LCFI40:
+ 608               		.cfi_def_cfa_offset 3
+ 609 0122 8F93      		push r24
+ 610               	.LCFI41:
+ 611               		.cfi_def_cfa_offset 4
+ 612 0124 0E94 0000 		call printf
+ 613               	.LVL43:
+ 107:main.c        **** 				lcd_set_xy(0,1);
+ 614               		.loc 1 107 0
+ 615 0128 61E0      		ldi r22,lo8(1)
+ 616 012a 80E0      		ldi r24,0
+ 617 012c 0E94 0000 		call lcd_set_xy
+ 618               	.LVL44:
+ 108:main.c        **** 				printf("%s",buf);
+ 619               		.loc 1 108 0
+ 620 0130 DF93      		push r29
+ 621               	.LCFI42:
+ 622               		.cfi_def_cfa_offset 5
+ 623 0132 CF93      		push r28
+ 624               	.LCFI43:
+ 625               		.cfi_def_cfa_offset 6
+ 626 0134 80E0      		ldi r24,lo8(.LC1)
+ 627 0136 90E0      		ldi r25,hi8(.LC1)
+ 628 0138 9F93      		push r25
+ 629               	.LCFI44:
+ 630               		.cfi_def_cfa_offset 7
+ 631 013a 8F93      		push r24
+ 632               	.LCFI45:
+ 633               		.cfi_def_cfa_offset 8
+ 634 013c 0E94 0000 		call printf
+ 635               	.LVL45:
+ 636               	.LBB18:
+ 637               	.LBB19:
+ 638               		.loc 2 187 0
+ 639 0140 9FEF      		ldi r25,lo8(3199999)
+ 640 0142 23ED      		ldi r18,hi8(3199999)
+ 641 0144 80E3      		ldi r24,hlo8(3199999)
+ 642 0146 9150      	1:	subi r25,1
+ 643 0148 2040      		sbci r18,0
+ 644 014a 8040      		sbci r24,0
+ 645 014c 01F4      		brne 1b
+ 646 014e 00C0      		rjmp .
+ 647 0150 0000      		nop
+ 648               	.LVL46:
+ 649               	.LBE19:
+ 650               	.LBE18:
+ 109:main.c        **** 				break;
+ 110:main.c        **** 			}
+ 111:main.c        **** 			else stop ("Error creat. file");
+ 112:main.c        **** 			
+ 113:main.c        **** 		}
+ 114:main.c        **** 		
+ 115:main.c        **** 	}
+ 116:main.c        **** 	
+ 117:main.c        **** 	_delay_ms(1000);
+ 118:main.c        **** 	
+ 119:main.c        **** 	lcd_clear();
+ 651               		.loc 1 119 0
+ 652 0152 0E94 0000 		call lcd_clear
+ 653               	.LVL47:
+ 654               	.LBB20:
+ 655               	.LBB21:
+ 656               		.loc 2 187 0
+ 657 0156 9FEF      		ldi r25,lo8(3199999)
+ 658 0158 23ED      		ldi r18,hi8(3199999)
+ 659 015a 80E3      		ldi r24,hlo8(3199999)
+ 660 015c 9150      	1:	subi r25,1
+ 661 015e 2040      		sbci r18,0
+ 662 0160 8040      		sbci r24,0
+ 663 0162 01F4      		brne 1b
+ 664 0164 00C0      		rjmp .
+ 665 0166 0000      		nop
+ 666               	.LVL48:
+ 667               	.LBE21:
+ 668               	.LBE20:
+ 120:main.c        **** 	_delay_ms(1000);
+ 121:main.c        **** 	
+ 122:main.c        **** 	cli();
+ 669               		.loc 1 122 0
+ 670               	/* #APP */
+ 671               	 ;  122 "main.c" 1
+ 672 0168 F894      		cli
+ 673               	 ;  0 "" 2
+ 123:main.c        **** 	TIMSK |= (1<<OCIE1A);
+ 674               		.loc 1 123 0
+ 675               	/* #NOAPP */
+ 676 016a 89B7      		in r24,0x39
+ 677 016c 8061      		ori r24,lo8(16)
+ 678 016e 89BF      		out 0x39,r24
+ 124:main.c        **** 	OCR1A=62499;
+ 679               		.loc 1 124 0
+ 680 0170 83E2      		ldi r24,lo8(35)
+ 681 0172 94EF      		ldi r25,lo8(-12)
+ 682 0174 9BBD      		out 0x2a+1,r25
+ 683 0176 8ABD      		out 0x2a,r24
+ 125:main.c        **** 	TCCR1B = (1<<WGM12) | (1<<CS12);
+ 684               		.loc 1 125 0
+ 685 0178 8CE0      		ldi r24,lo8(12)
+ 686 017a 8EBD      		out 0x2e,r24
+ 126:main.c        **** 	sei();
+ 687               		.loc 1 126 0
+ 688               	/* #APP */
+ 689               	 ;  126 "main.c" 1
+ 690 017c 7894      		sei
+ 691               	 ;  0 "" 2
+ 692               	/* #NOAPP */
+ 693 017e 0F90      		pop __tmp_reg__
+ 694 0180 0F90      		pop __tmp_reg__
+ 695 0182 0F90      		pop __tmp_reg__
+ 696 0184 0F90      		pop __tmp_reg__
+ 697 0186 0F90      		pop __tmp_reg__
+ 698 0188 0F90      		pop __tmp_reg__
+ 699               	.LCFI46:
+ 700               		.cfi_def_cfa_offset 2
+ 701 018a 00C0      		rjmp .L16
+ 702               	.L15:
+ 111:main.c        **** 			
+ 703               		.loc 1 111 0
+ 704 018c 80E0      		ldi r24,lo8(.LC12)
+ 705 018e 90E0      		ldi r25,hi8(.LC12)
+ 706               	.LVL49:
+ 707               	.L21:
+ 708 0190 0E94 0000 		call stop
+ 709               	.LVL50:
+ 710               	.L16:
+ 127:main.c        **** 	while(1)
+ 128:main.c        **** 	{
+ 129:main.c        **** 		if(!(SWITCH_PIN & (1<<SWITCH)))
+ 711               		.loc 1 129 0
+ 712 0194 8799      		sbic 0x10,7
+ 713 0196 00C0      		rjmp .L16
+ 130:main.c        **** 		{
+ 131:main.c        **** 			TIMSK&=!(1<<OCIE1A);
+ 714               		.loc 1 131 0
+ 715 0198 89B7      		in r24,0x39
+ 716 019a 19BE      		out 0x39,__zero_reg__
+ 132:main.c        **** 			TCCR1B=0;
+ 717               		.loc 1 132 0
+ 718 019c 1EBC      		out 0x2e,__zero_reg__
+ 719               	.LVL51:
+ 720               	.LBB22:
+ 721               	.LBB23:
+ 722               		.loc 2 187 0
+ 723 019e 9FEF      		ldi r25,lo8(3199999)
+ 724 01a0 23ED      		ldi r18,hi8(3199999)
+ 725 01a2 80E3      		ldi r24,hlo8(3199999)
+ 726 01a4 9150      	1:	subi r25,1
+ 727 01a6 2040      		sbci r18,0
+ 728 01a8 8040      		sbci r24,0
+ 729 01aa 01F4      		brne 1b
+ 730 01ac 00C0      		rjmp .
+ 731 01ae 0000      		nop
+ 732               	.LVL52:
+ 733               	.LBE23:
+ 734               	.LBE22:
+ 133:main.c        **** 			_delay_ms(1000);
+ 134:main.c        **** 			f_close(&fil);
+ 735               		.loc 1 134 0
+ 736 01b0 80E0      		ldi r24,lo8(fil)
+ 737 01b2 90E0      		ldi r25,hi8(fil)
+ 738 01b4 0E94 0000 		call f_close
+ 739               	.LVL53:
+ 135:main.c        **** 			stop("OK File closed");
+ 740               		.loc 1 135 0
+ 741 01b8 80E0      		ldi r24,lo8(.LC13)
+ 742 01ba 90E0      		ldi r25,hi8(.LC13)
+ 743 01bc 00C0      		rjmp .L21
+ 744               		.cfi_endproc
+ 745               	.LFE14:
+ 747               		.local	num.2644
+ 748               		.comm	num.2644,4,1
+ 749               	.global	suffix
+ 750               		.data
+ 753               	suffix:
+ 754 0000 2E74 7874 		.string	".txt"
+ 754      00
+ 755               	.global	prefix
+ 758               	prefix:
+ 759 0005 6461 7461 		.string	"data"
+ 759      00
+ 760               		.comm	temp,4,1
+ 761               		.comm	buf,80,1
+ 762               		.comm	fresult,1,1
+ 763               		.comm	fil,34,1
+ 764               		.comm	fs,559,1
+ 765               		.text
+ 766               	.Letext0:
+ 767               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 768               		.file 4 "ff.h"
+ 769               		.file 5 "lcd.h"
+ 770               		.file 6 "/usr/lib/avr/include/stdio.h"
+ 771               		.file 7 "ds18b20.h"
+ 772               		.file 8 "/usr/lib/avr/include/string.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccq98BGA.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccq98BGA.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccq98BGA.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccq98BGA.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccq98BGA.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccq98BGA.s:18     .text:0000000000000000 stop
+     /tmp/ccq98BGA.s:97     .text:0000000000000040 __vector_7
+                            *COM*:0000000000000004 temp
+                             .bss:0000000000000000 num.2644
+                            *COM*:0000000000000050 buf
+                            *COM*:0000000000000022 fil
+                            *COM*:0000000000000001 fresult
+     /tmp/ccq98BGA.s:376    .text.startup:0000000000000000 main
+                            *COM*:000000000000022f fs
+     /tmp/ccq98BGA.s:758    .data:0000000000000005 prefix
+     /tmp/ccq98BGA.s:753    .data:0000000000000000 suffix
+
+UNDEFINED SYMBOLS
+lcd_clear
+lcd_set_xy
+printf
+__floatsisf
+__mulsf3
+DS18B20_start
+DS18B20_read
+sprintf
+f_write
+f_sync
+lcdinit
+DS18B20_init
+f_mount
+strcpy
+f_stat
+f_open
+f_close
+__do_copy_data
+__do_clear_bss
