@@ -1,0 +1,327 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.rodata.str1.1,"aMS",@progbits,1
+  11               	.LC1:
+  12 0000 4461 7465 		.string	"Date: %02d/%02d/20%02d"
+  12      3A20 2530 
+  12      3264 2F25 
+  12      3032 642F 
+  12      3230 2530 
+  13               	.LC2:
+  14 0017 5469 6D65 		.string	"Time: %02d:%02d:%02d"
+  14      3A20 2530 
+  14      3264 3A25 
+  14      3032 643A 
+  14      2530 3264 
+  15               		.text
+  16               	.global	__vector_1
+  18               	__vector_1:
+  19               	.LFB8:
+  20               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include <avr/interrupt.h>
+   3:main.c        **** #include <stdio.h>
+   4:main.c        **** #include "lcd.h"
+   5:main.c        **** #include "twi.h"
+   6:main.c        **** #include "rtc.h"
+   7:main.c        **** 
+   8:main.c        **** ISR(INT0_vect) {
+  21               		.loc 1 8 0
+  22               		.cfi_startproc
+  23 0000 1F92      		push r1
+  24               	.LCFI0:
+  25               		.cfi_def_cfa_offset 3
+  26               		.cfi_offset 1, -2
+  27 0002 0F92      		push r0
+  28               	.LCFI1:
+  29               		.cfi_def_cfa_offset 4
+  30               		.cfi_offset 0, -3
+  31 0004 0FB6      		in r0,__SREG__
+  32 0006 0F92      		push r0
+  33 0008 1124      		clr __zero_reg__
+  34 000a 2F93      		push r18
+  35               	.LCFI2:
+  36               		.cfi_def_cfa_offset 5
+  37               		.cfi_offset 18, -4
+  38 000c 3F93      		push r19
+  39               	.LCFI3:
+  40               		.cfi_def_cfa_offset 6
+  41               		.cfi_offset 19, -5
+  42 000e 4F93      		push r20
+  43               	.LCFI4:
+  44               		.cfi_def_cfa_offset 7
+  45               		.cfi_offset 20, -6
+  46 0010 5F93      		push r21
+  47               	.LCFI5:
+  48               		.cfi_def_cfa_offset 8
+  49               		.cfi_offset 21, -7
+  50 0012 6F93      		push r22
+  51               	.LCFI6:
+  52               		.cfi_def_cfa_offset 9
+  53               		.cfi_offset 22, -8
+  54 0014 7F93      		push r23
+  55               	.LCFI7:
+  56               		.cfi_def_cfa_offset 10
+  57               		.cfi_offset 23, -9
+  58 0016 8F93      		push r24
+  59               	.LCFI8:
+  60               		.cfi_def_cfa_offset 11
+  61               		.cfi_offset 24, -10
+  62 0018 9F93      		push r25
+  63               	.LCFI9:
+  64               		.cfi_def_cfa_offset 12
+  65               		.cfi_offset 25, -11
+  66 001a AF93      		push r26
+  67               	.LCFI10:
+  68               		.cfi_def_cfa_offset 13
+  69               		.cfi_offset 26, -12
+  70 001c BF93      		push r27
+  71               	.LCFI11:
+  72               		.cfi_def_cfa_offset 14
+  73               		.cfi_offset 27, -13
+  74 001e EF93      		push r30
+  75               	.LCFI12:
+  76               		.cfi_def_cfa_offset 15
+  77               		.cfi_offset 30, -14
+  78 0020 FF93      		push r31
+  79               	.LCFI13:
+  80               		.cfi_def_cfa_offset 16
+  81               		.cfi_offset 31, -15
+  82 0022 CF93      		push r28
+  83               	.LCFI14:
+  84               		.cfi_def_cfa_offset 17
+  85               		.cfi_offset 28, -16
+  86 0024 DF93      		push r29
+  87               	.LCFI15:
+  88               		.cfi_def_cfa_offset 18
+  89               		.cfi_offset 29, -17
+  90 0026 CDB7      		in r28,__SP_L__
+  91 0028 DEB7      		in r29,__SP_H__
+  92               	.LCFI16:
+  93               		.cfi_def_cfa_register 28
+  94 002a 2797      		sbiw r28,7
+  95               	.LCFI17:
+  96               		.cfi_def_cfa_offset 25
+  97 002c DEBF      		out __SP_H__,r29
+  98 002e CDBF      		out __SP_L__,r28
+  99               	/* prologue: Signal */
+ 100               	/* frame size = 7 */
+ 101               	/* stack size = 24 */
+ 102               	.L__stack_usage = 24
+   9:main.c        **** 	struct datetime dt;
+  10:main.c        **** 	rtc_get_date_time(&dt);
+ 103               		.loc 1 10 0
+ 104 0030 CE01      		movw r24,r28
+ 105 0032 0196      		adiw r24,1
+ 106 0034 0E94 0000 		call rtc_get_date_time
+ 107               	.LVL0:
+  11:main.c        **** 	lcd_set_xy(0,0);
+ 108               		.loc 1 11 0
+ 109 0038 60E0      		ldi r22,0
+ 110 003a 80E0      		ldi r24,0
+ 111 003c 0E94 0000 		call lcd_set_xy
+ 112               	.LVL1:
+  12:main.c        **** 	printf("Date: %02d/%02d/20%02d", dt.day, dt.month, dt.year);
+ 113               		.loc 1 12 0
+ 114 0040 8F81      		ldd r24,Y+7
+ 115 0042 1F92      		push __zero_reg__
+ 116 0044 8F93      		push r24
+ 117 0046 8E81      		ldd r24,Y+6
+ 118 0048 1F92      		push __zero_reg__
+ 119 004a 8F93      		push r24
+ 120 004c 8C81      		ldd r24,Y+4
+ 121 004e 1F92      		push __zero_reg__
+ 122 0050 8F93      		push r24
+ 123 0052 80E0      		ldi r24,lo8(.LC1)
+ 124 0054 90E0      		ldi r25,hi8(.LC1)
+ 125 0056 9F93      		push r25
+ 126 0058 8F93      		push r24
+ 127 005a 0E94 0000 		call printf
+ 128               	.LVL2:
+  13:main.c        **** 	lcd_set_xy(0, 1);
+ 129               		.loc 1 13 0
+ 130 005e 61E0      		ldi r22,lo8(1)
+ 131 0060 80E0      		ldi r24,0
+ 132 0062 0E94 0000 		call lcd_set_xy
+ 133               	.LVL3:
+  14:main.c        **** 	printf("Time: %02d:%02d:%02d", dt.hour, dt.min, dt.sec);
+ 134               		.loc 1 14 0
+ 135 0066 8B81      		ldd r24,Y+3
+ 136 0068 1F92      		push __zero_reg__
+ 137 006a 8F93      		push r24
+ 138 006c 8A81      		ldd r24,Y+2
+ 139 006e 1F92      		push __zero_reg__
+ 140 0070 8F93      		push r24
+ 141 0072 8981      		ldd r24,Y+1
+ 142 0074 1F92      		push __zero_reg__
+ 143 0076 8F93      		push r24
+ 144 0078 80E0      		ldi r24,lo8(.LC2)
+ 145 007a 90E0      		ldi r25,hi8(.LC2)
+ 146 007c 9F93      		push r25
+ 147 007e 8F93      		push r24
+ 148 0080 0E94 0000 		call printf
+ 149               	.LVL4:
+  15:main.c        **** }
+ 150               		.loc 1 15 0
+ 151 0084 0FB6      		in __tmp_reg__,__SREG__
+ 152 0086 F894      		cli
+ 153 0088 DEBF      		out __SP_H__,r29
+ 154 008a 0FBE      		out __SREG__,__tmp_reg__
+ 155 008c CDBF      		out __SP_L__,r28
+ 156               	/* epilogue start */
+ 157 008e 2796      		adiw r28,7
+ 158 0090 0FB6      		in __tmp_reg__,__SREG__
+ 159 0092 F894      		cli
+ 160 0094 DEBF      		out __SP_H__,r29
+ 161 0096 0FBE      		out __SREG__,__tmp_reg__
+ 162 0098 CDBF      		out __SP_L__,r28
+ 163 009a DF91      		pop r29
+ 164 009c CF91      		pop r28
+ 165 009e FF91      		pop r31
+ 166 00a0 EF91      		pop r30
+ 167 00a2 BF91      		pop r27
+ 168 00a4 AF91      		pop r26
+ 169 00a6 9F91      		pop r25
+ 170 00a8 8F91      		pop r24
+ 171 00aa 7F91      		pop r23
+ 172 00ac 6F91      		pop r22
+ 173 00ae 5F91      		pop r21
+ 174 00b0 4F91      		pop r20
+ 175 00b2 3F91      		pop r19
+ 176 00b4 2F91      		pop r18
+ 177 00b6 0F90      		pop r0
+ 178 00b8 0FBE      		out __SREG__,r0
+ 179 00ba 0F90      		pop r0
+ 180 00bc 1F90      		pop r1
+ 181 00be 1895      		reti
+ 182               		.cfi_endproc
+ 183               	.LFE8:
+ 185               		.section	.rodata
+ 186               	.LC0:
+ 187 0000 0D        		.byte	13
+ 188 0001 23        		.byte	35
+ 189 0002 00        		.byte	0
+ 190 0003 12        		.byte	18
+ 191 0004 02        		.byte	2
+ 192 0005 04        		.byte	4
+ 193 0006 17        		.byte	23
+ 194               		.section	.text.startup,"ax",@progbits
+ 195               	.global	main
+ 197               	main:
+ 198               	.LFB9:
+  16:main.c        **** int main(void){
+ 199               		.loc 1 16 0
+ 200               		.cfi_startproc
+ 201 0000 CF93      		push r28
+ 202               	.LCFI18:
+ 203               		.cfi_def_cfa_offset 3
+ 204               		.cfi_offset 28, -2
+ 205 0002 DF93      		push r29
+ 206               	.LCFI19:
+ 207               		.cfi_def_cfa_offset 4
+ 208               		.cfi_offset 29, -3
+ 209 0004 CDB7      		in r28,__SP_L__
+ 210 0006 DEB7      		in r29,__SP_H__
+ 211               	.LCFI20:
+ 212               		.cfi_def_cfa_register 28
+ 213 0008 2797      		sbiw r28,7
+ 214               	.LCFI21:
+ 215               		.cfi_def_cfa_offset 11
+ 216 000a 0FB6      		in __tmp_reg__,__SREG__
+ 217 000c F894      		cli
+ 218 000e DEBF      		out __SP_H__,r29
+ 219 0010 0FBE      		out __SREG__,__tmp_reg__
+ 220 0012 CDBF      		out __SP_L__,r28
+ 221               	/* prologue: function */
+ 222               	/* frame size = 7 */
+ 223               	/* stack size = 9 */
+ 224               	.L__stack_usage = 9
+  17:main.c        **** 	lcdinit();
+ 225               		.loc 1 17 0
+ 226 0014 0E94 0000 		call lcdinit
+ 227               	.LVL5:
+  18:main.c        **** 	struct datetime mydt={
+ 228               		.loc 1 18 0
+ 229 0018 87E0      		ldi r24,lo8(7)
+ 230 001a E0E0      		ldi r30,lo8(.LC0)
+ 231 001c F0E0      		ldi r31,hi8(.LC0)
+ 232 001e DE01      		movw r26,r28
+ 233 0020 1196      		adiw r26,1
+ 234               		0:
+ 235 0022 0190      		ld r0,Z+
+ 236 0024 0D92      		st X+,r0
+ 237 0026 8A95      		dec r24
+ 238 0028 01F4      		brne 0b
+  19:main.c        **** 		.sec = 0,
+  20:main.c        **** 		.min = 35,
+  21:main.c        **** 		.hour  = 13,
+  22:main.c        **** 		.day = 18,
+  23:main.c        **** 		.weekday = 02,
+  24:main.c        **** 		.month = 04,
+  25:main.c        **** 		.year = 23
+  26:main.c        **** 	};
+  27:main.c        **** 	I2C_init();
+ 239               		.loc 1 27 0
+ 240 002a 0E94 0000 		call I2C_init
+ 241               	.LVL6:
+  28:main.c        **** 	rtc_set_date_time(&mydt);
+ 242               		.loc 1 28 0
+ 243 002e CE01      		movw r24,r28
+ 244 0030 0196      		adiw r24,1
+ 245 0032 0E94 0000 		call rtc_set_date_time
+ 246               	.LVL7:
+  29:main.c        **** 	
+  30:main.c        **** 	MCUCR |= (1<<ISC01);
+ 247               		.loc 1 30 0
+ 248 0036 85B7      		in r24,0x35
+ 249 0038 8260      		ori r24,lo8(2)
+ 250 003a 85BF      		out 0x35,r24
+  31:main.c        **** 	GICR |= (1<<INT0);
+ 251               		.loc 1 31 0
+ 252 003c 8BB7      		in r24,0x3b
+ 253 003e 8064      		ori r24,lo8(64)
+ 254 0040 8BBF      		out 0x3b,r24
+  32:main.c        **** 	
+  33:main.c        **** 	sei();
+ 255               		.loc 1 33 0
+ 256               	/* #APP */
+ 257               	 ;  33 "main.c" 1
+ 258 0042 7894      		sei
+ 259               	 ;  0 "" 2
+ 260               	/* #NOAPP */
+ 261               	.L3:
+ 262 0044 00C0      		rjmp .L3
+ 263               		.cfi_endproc
+ 264               	.LFE9:
+ 266               		.text
+ 267               	.Letext0:
+ 268               		.file 2 "rtc.h"
+ 269               		.file 3 "lcd.h"
+ 270               		.file 4 "/usr/lib/avr/include/stdio.h"
+ 271               		.file 5 "twi.h"
+ 272               		.file 6 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccFU3Zs7.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccFU3Zs7.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccFU3Zs7.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccFU3Zs7.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccFU3Zs7.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccFU3Zs7.s:18     .text:0000000000000000 __vector_1
+     /tmp/ccFU3Zs7.s:197    .text.startup:0000000000000000 main
+
+UNDEFINED SYMBOLS
+rtc_get_date_time
+lcd_set_xy
+printf
+lcdinit
+I2C_init
+rtc_set_date_time
+__do_copy_data

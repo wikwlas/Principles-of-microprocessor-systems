@@ -1,0 +1,86 @@
+   1               		.file	"spi.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	SPI_MasterInit
+  12               	SPI_MasterInit:
+  13               	.LFB0:
+  14               		.file 1 "spi.c"
+   1:spi.c         **** #include "spi.h"
+   2:spi.c         **** 
+   3:spi.c         **** 
+   4:spi.c         **** void SPI_MasterInit(void) {
+  15               		.loc 1 4 0
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+   5:spi.c         **** 	DDRB|=(1<<SS)|(1<<MOSI)|(1<<SCK);
+  21               		.loc 1 5 0
+  22 0000 87B3      		in r24,0x17
+  23 0002 806B      		ori r24,lo8(-80)
+  24 0004 87BB      		out 0x17,r24
+   6:spi.c         **** 	PORTB|=(1<<SS);
+  25               		.loc 1 6 0
+  26 0006 C49A      		sbi 0x18,4
+   7:spi.c         **** 	DDRB&=~(MISO);
+  27               		.loc 1 7 0
+  28 0008 87B3      		in r24,0x17
+  29 000a 897F      		andi r24,lo8(-7)
+  30 000c 87BB      		out 0x17,r24
+   8:spi.c         **** 	SPCR=(1<<SPE)|(1<<MSTR)|(1<<SPR0);
+  31               		.loc 1 8 0
+  32 000e 81E5      		ldi r24,lo8(81)
+  33 0010 8DB9      		out 0xd,r24
+  34 0012 0895      		ret
+  35               		.cfi_endproc
+  36               	.LFE0:
+  38               	.global	SPI_MasterTransmit
+  40               	SPI_MasterTransmit:
+  41               	.LFB1:
+   9:spi.c         **** }
+  10:spi.c         **** 
+  11:spi.c         **** uint8_t SPI_MasterTransmit(uint8_t data) {
+  42               		.loc 1 11 0
+  43               		.cfi_startproc
+  44               	.LVL0:
+  45               	/* prologue: function */
+  46               	/* frame size = 0 */
+  47               	/* stack size = 0 */
+  48               	.L__stack_usage = 0
+  12:spi.c         **** 	SPDR = data;
+  49               		.loc 1 12 0
+  50 0014 8FB9      		out 0xf,r24
+  51               	.L3:
+  13:spi.c         **** 	while(! (SPSR & (1<<SPIF))); //SPIF=1 transmisja zakonczona
+  52               		.loc 1 13 0 discriminator 1
+  53 0016 779B      		sbis 0xe,7
+  54 0018 00C0      		rjmp .L3
+  14:spi.c         **** 	return SPDR;
+  55               		.loc 1 14 0
+  56 001a 8FB1      		in r24,0xf
+  57               	.LVL1:
+  15:spi.c         **** }
+  58               		.loc 1 15 0
+  59 001c 0895      		ret
+  60               		.cfi_endproc
+  61               	.LFE1:
+  63               	.Letext0:
+  64               		.file 2 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 spi.c
+     /tmp/ccnouyPH.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccnouyPH.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccnouyPH.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccnouyPH.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccnouyPH.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccnouyPH.s:12     .text:0000000000000000 SPI_MasterInit
+     /tmp/ccnouyPH.s:40     .text:0000000000000014 SPI_MasterTransmit
+
+NO UNDEFINED SYMBOLS

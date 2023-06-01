@@ -1,0 +1,183 @@
+   1               		.file	"twi.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	I2C_init
+  12               	I2C_init:
+  13               	.LFB0:
+  14               		.file 1 "twi.c"
+   1:twi.c         **** #include "twi.h"
+   2:twi.c         **** 
+   3:twi.c         **** void I2C_init(void) {
+  15               		.loc 1 3 0
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+   4:twi.c         **** 	TWBR = 12;
+  21               		.loc 1 4 0
+  22 0000 8CE0      		ldi r24,lo8(12)
+  23 0002 80B9      		out 0,r24
+   5:twi.c         **** 	TWSR &= ~((1<<TWPS0)|(1<<TWPS1));
+  24               		.loc 1 5 0
+  25 0004 81B1      		in r24,0x1
+  26 0006 8C7F      		andi r24,lo8(-4)
+  27 0008 81B9      		out 0x1,r24
+  28 000a 0895      		ret
+  29               		.cfi_endproc
+  30               	.LFE0:
+  32               	.global	I2C_start
+  34               	I2C_start:
+  35               	.LFB1:
+   6:twi.c         **** }
+   7:twi.c         **** uint8_t I2C_start(void) {
+  36               		.loc 1 7 0
+  37               		.cfi_startproc
+  38               	/* prologue: function */
+  39               	/* frame size = 0 */
+  40               	/* stack size = 0 */
+  41               	.L__stack_usage = 0
+   8:twi.c         **** 	TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN);
+  42               		.loc 1 8 0
+  43 000c 84EA      		ldi r24,lo8(-92)
+  44 000e 86BF      		out 0x36,r24
+  45               	.L3:
+   9:twi.c         **** 	while( !(TWCR&(1<<TWINT)));
+  46               		.loc 1 9 0 discriminator 1
+  47 0010 06B6      		in __tmp_reg__,0x36
+  48 0012 07FE      		sbrs __tmp_reg__,7
+  49 0014 00C0      		rjmp .L3
+  10:twi.c         **** 	return (TWSR & 0xf8);
+  50               		.loc 1 10 0
+  51 0016 81B1      		in r24,0x1
+  11:twi.c         **** 	
+  12:twi.c         **** }
+  52               		.loc 1 12 0
+  53 0018 887F      		andi r24,lo8(-8)
+  54 001a 0895      		ret
+  55               		.cfi_endproc
+  56               	.LFE1:
+  58               	.global	I2C_stop
+  60               	I2C_stop:
+  61               	.LFB2:
+  13:twi.c         **** void I2C_stop(void) {
+  62               		.loc 1 13 0
+  63               		.cfi_startproc
+  64               	/* prologue: function */
+  65               	/* frame size = 0 */
+  66               	/* stack size = 0 */
+  67               	.L__stack_usage = 0
+  14:twi.c         **** 	TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEN);
+  68               		.loc 1 14 0
+  69 001c 84E9      		ldi r24,lo8(-108)
+  70 001e 86BF      		out 0x36,r24
+  71               	.L7:
+  15:twi.c         **** 	while((TWCR&(1<<TWSTO)));
+  72               		.loc 1 15 0 discriminator 1
+  73 0020 06B6      		in __tmp_reg__,0x36
+  74 0022 04FC      		sbrc __tmp_reg__,4
+  75 0024 00C0      		rjmp .L7
+  76               	/* epilogue start */
+  16:twi.c         **** }
+  77               		.loc 1 16 0
+  78 0026 0895      		ret
+  79               		.cfi_endproc
+  80               	.LFE2:
+  82               	.global	I2C_write
+  84               	I2C_write:
+  85               	.LFB3:
+  17:twi.c         **** uint8_t I2C_write(uint8_t byte) {
+  86               		.loc 1 17 0
+  87               		.cfi_startproc
+  88               	.LVL0:
+  89               	/* prologue: function */
+  90               	/* frame size = 0 */
+  91               	/* stack size = 0 */
+  92               	.L__stack_usage = 0
+  18:twi.c         **** 	TWDR = byte;
+  93               		.loc 1 18 0
+  94 0028 83B9      		out 0x3,r24
+  19:twi.c         **** 	TWCR = (1<<TWINT)|(1<<TWEN);
+  95               		.loc 1 19 0
+  96 002a 84E8      		ldi r24,lo8(-124)
+  97               	.LVL1:
+  98 002c 86BF      		out 0x36,r24
+  99               	.LVL2:
+ 100               	.L10:
+  20:twi.c         **** 	while( !(TWCR&(1<<TWINT)));
+ 101               		.loc 1 20 0 discriminator 1
+ 102 002e 06B6      		in __tmp_reg__,0x36
+ 103 0030 07FE      		sbrs __tmp_reg__,7
+ 104 0032 00C0      		rjmp .L10
+  21:twi.c         **** 	return (TWSR & 0xf8);
+ 105               		.loc 1 21 0
+ 106 0034 81B1      		in r24,0x1
+  22:twi.c         **** }
+ 107               		.loc 1 22 0
+ 108 0036 887F      		andi r24,lo8(-8)
+ 109 0038 0895      		ret
+ 110               		.cfi_endproc
+ 111               	.LFE3:
+ 113               	.global	I2C_read
+ 115               	I2C_read:
+ 116               	.LFB4:
+  23:twi.c         **** uint8_t I2C_read(uint8_t *value, uint8_t ack) {
+ 117               		.loc 1 23 0
+ 118               		.cfi_startproc
+ 119               	.LVL3:
+ 120               	/* prologue: function */
+ 121               	/* frame size = 0 */
+ 122               	/* stack size = 0 */
+ 123               	.L__stack_usage = 0
+  24:twi.c         **** 	TWCR = (1<<TWINT)|(1<<TWEN)|(ack<<TWEA);
+ 124               		.loc 1 24 0
+ 125 003a 20E4      		ldi r18,lo8(64)
+ 126 003c 629F      		mul r22,r18
+ 127 003e B001      		movw r22,r0
+ 128 0040 1124      		clr __zero_reg__
+ 129               	.LVL4:
+ 130 0042 6468      		ori r22,lo8(-124)
+ 131 0044 66BF      		out 0x36,r22
+ 132               	.L13:
+  25:twi.c         **** 	while( !(TWCR&(1<<TWINT)));
+ 133               		.loc 1 25 0 discriminator 1
+ 134 0046 06B6      		in __tmp_reg__,0x36
+ 135 0048 07FE      		sbrs __tmp_reg__,7
+ 136 004a 00C0      		rjmp .L13
+  26:twi.c         **** 	*value = TWDR;
+ 137               		.loc 1 26 0
+ 138 004c 23B1      		in r18,0x3
+ 139 004e FC01      		movw r30,r24
+ 140 0050 2083      		st Z,r18
+  27:twi.c         **** 	return (TWSR & 0xf8);
+ 141               		.loc 1 27 0
+ 142 0052 81B1      		in r24,0x1
+ 143               	.LVL5:
+  28:twi.c         **** }
+ 144               		.loc 1 28 0
+ 145 0054 887F      		andi r24,lo8(-8)
+ 146 0056 0895      		ret
+ 147               		.cfi_endproc
+ 148               	.LFE4:
+ 150               	.Letext0:
+ 151               		.file 2 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 twi.c
+     /tmp/cc5j4gGQ.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc5j4gGQ.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc5j4gGQ.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc5j4gGQ.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc5j4gGQ.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc5j4gGQ.s:12     .text:0000000000000000 I2C_init
+     /tmp/cc5j4gGQ.s:34     .text:000000000000000c I2C_start
+     /tmp/cc5j4gGQ.s:60     .text:000000000000001c I2C_stop
+     /tmp/cc5j4gGQ.s:84     .text:0000000000000028 I2C_write
+     /tmp/cc5j4gGQ.s:115    .text:000000000000003a I2C_read
+
+NO UNDEFINED SYMBOLS

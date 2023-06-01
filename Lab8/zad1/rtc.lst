@@ -1,0 +1,436 @@
+   1               		.file	"rtc.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	rtc_init
+  12               	rtc_init:
+  13               	.LFB0:
+  14               		.file 1 "rtc.c"
+   1:rtc.c         **** #include "rtc.h"
+   2:rtc.c         **** 
+   3:rtc.c         **** void rtc_init(void) {
+  15               		.loc 1 3 0
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+   4:rtc.c         **** 	I2C_start();
+  21               		.loc 1 4 0
+  22 0000 0E94 0000 		call I2C_start
+  23               	.LVL0:
+   5:rtc.c         **** 	I2C_write(RTC_ADDR_W);
+  24               		.loc 1 5 0
+  25 0004 82EA      		ldi r24,lo8(-94)
+  26 0006 0E94 0000 		call I2C_write
+  27               	.LVL1:
+   6:rtc.c         **** 	I2C_write(RTC_CLKOUT_CTRL);
+  28               		.loc 1 6 0
+  29 000a 8DE0      		ldi r24,lo8(13)
+  30 000c 0E94 0000 		call I2C_write
+  31               	.LVL2:
+   7:rtc.c         **** 	I2C_write((1<<RTC_CLKOUT_BIT)|(1<<RTC_CLKOUT_FD1_BIT)|(1<<RTC_CLKOUT_FD0_BIT));
+  32               		.loc 1 7 0
+  33 0010 83E8      		ldi r24,lo8(-125)
+  34 0012 0E94 0000 		call I2C_write
+  35               	.LVL3:
+   8:rtc.c         **** 	I2C_stop();
+  36               		.loc 1 8 0
+  37 0016 0C94 0000 		jmp I2C_stop
+  38               	.LVL4:
+  39               		.cfi_endproc
+  40               	.LFE0:
+  42               	.global	rtc_set_date_time
+  44               	rtc_set_date_time:
+  45               	.LFB1:
+   9:rtc.c         **** }
+  10:rtc.c         **** void rtc_set_date_time(struct datetime *dt) {
+  46               		.loc 1 10 0
+  47               		.cfi_startproc
+  48               	.LVL5:
+  49 001a 0F93      		push r16
+  50               	.LCFI0:
+  51               		.cfi_def_cfa_offset 3
+  52               		.cfi_offset 16, -2
+  53 001c 1F93      		push r17
+  54               	.LCFI1:
+  55               		.cfi_def_cfa_offset 4
+  56               		.cfi_offset 17, -3
+  57 001e CF93      		push r28
+  58               	.LCFI2:
+  59               		.cfi_def_cfa_offset 5
+  60               		.cfi_offset 28, -4
+  61               	/* prologue: function */
+  62               	/* frame size = 0 */
+  63               	/* stack size = 3 */
+  64               	.L__stack_usage = 3
+  65 0020 8C01      		movw r16,r24
+  11:rtc.c         **** 	I2C_start();
+  66               		.loc 1 11 0
+  67 0022 0E94 0000 		call I2C_start
+  68               	.LVL6:
+  12:rtc.c         **** 	I2C_write(RTC_ADDR_W);
+  69               		.loc 1 12 0
+  70 0026 82EA      		ldi r24,lo8(-94)
+  71 0028 0E94 0000 		call I2C_write
+  72               	.LVL7:
+  13:rtc.c         **** 	I2C_write(RTC_SECOND);
+  73               		.loc 1 13 0
+  74 002c 82E0      		ldi r24,lo8(2)
+  75 002e 0E94 0000 		call I2C_write
+  76               	.LVL8:
+  14:rtc.c         **** 	I2C_write(dec2bcd(dt->sec));
+  77               		.loc 1 14 0
+  78 0032 F801      		movw r30,r16
+  79 0034 8281      		ldd r24,Z+2
+  80 0036 CAE0      		ldi r28,lo8(10)
+  81 0038 6C2F      		mov r22,r28
+  82 003a 0E94 0000 		call __udivmodqi4
+  83 003e F0E1      		ldi r31,lo8(16)
+  84 0040 8F9F      		mul r24,r31
+  85 0042 900D      		add r25,r0
+  86 0044 1124      		clr __zero_reg__
+  87 0046 892F      		mov r24,r25
+  88 0048 0E94 0000 		call I2C_write
+  89               	.LVL9:
+  15:rtc.c         **** 	I2C_write(dec2bcd(dt->min));
+  90               		.loc 1 15 0
+  91 004c F801      		movw r30,r16
+  92 004e 8181      		ldd r24,Z+1
+  93 0050 6C2F      		mov r22,r28
+  94 0052 0E94 0000 		call __udivmodqi4
+  95 0056 F0E1      		ldi r31,lo8(16)
+  96 0058 8F9F      		mul r24,r31
+  97 005a 900D      		add r25,r0
+  98 005c 1124      		clr __zero_reg__
+  99 005e 892F      		mov r24,r25
+ 100 0060 0E94 0000 		call I2C_write
+ 101               	.LVL10:
+  16:rtc.c         **** 	I2C_write(dec2bcd(dt->hour));
+ 102               		.loc 1 16 0
+ 103 0064 F801      		movw r30,r16
+ 104 0066 8081      		ld r24,Z
+ 105 0068 6C2F      		mov r22,r28
+ 106 006a 0E94 0000 		call __udivmodqi4
+ 107 006e F0E1      		ldi r31,lo8(16)
+ 108 0070 8F9F      		mul r24,r31
+ 109 0072 900D      		add r25,r0
+ 110 0074 1124      		clr __zero_reg__
+ 111 0076 892F      		mov r24,r25
+ 112 0078 0E94 0000 		call I2C_write
+ 113               	.LVL11:
+  17:rtc.c         **** 	I2C_write(dec2bcd(dt->day));
+ 114               		.loc 1 17 0
+ 115 007c F801      		movw r30,r16
+ 116 007e 8381      		ldd r24,Z+3
+ 117 0080 6C2F      		mov r22,r28
+ 118 0082 0E94 0000 		call __udivmodqi4
+ 119 0086 F0E1      		ldi r31,lo8(16)
+ 120 0088 8F9F      		mul r24,r31
+ 121 008a 900D      		add r25,r0
+ 122 008c 1124      		clr __zero_reg__
+ 123 008e 892F      		mov r24,r25
+ 124 0090 0E94 0000 		call I2C_write
+ 125               	.LVL12:
+  18:rtc.c         **** 	I2C_write(dec2bcd(dt->weekday));
+ 126               		.loc 1 18 0
+ 127 0094 F801      		movw r30,r16
+ 128 0096 8481      		ldd r24,Z+4
+ 129 0098 6C2F      		mov r22,r28
+ 130 009a 0E94 0000 		call __udivmodqi4
+ 131 009e F0E1      		ldi r31,lo8(16)
+ 132 00a0 8F9F      		mul r24,r31
+ 133 00a2 900D      		add r25,r0
+ 134 00a4 1124      		clr __zero_reg__
+ 135 00a6 892F      		mov r24,r25
+ 136 00a8 0E94 0000 		call I2C_write
+ 137               	.LVL13:
+  19:rtc.c         **** 	I2C_write(dec2bcd(dt->month));
+ 138               		.loc 1 19 0
+ 139 00ac F801      		movw r30,r16
+ 140 00ae 8581      		ldd r24,Z+5
+ 141 00b0 6C2F      		mov r22,r28
+ 142 00b2 0E94 0000 		call __udivmodqi4
+ 143 00b6 F0E1      		ldi r31,lo8(16)
+ 144 00b8 8F9F      		mul r24,r31
+ 145 00ba 900D      		add r25,r0
+ 146 00bc 1124      		clr __zero_reg__
+ 147 00be 892F      		mov r24,r25
+ 148 00c0 0E94 0000 		call I2C_write
+ 149               	.LVL14:
+  20:rtc.c         **** 	I2C_write(dec2bcd(dt->year));
+ 150               		.loc 1 20 0
+ 151 00c4 F801      		movw r30,r16
+ 152 00c6 8681      		ldd r24,Z+6
+ 153 00c8 6C2F      		mov r22,r28
+ 154 00ca 0E94 0000 		call __udivmodqi4
+ 155 00ce F0E1      		ldi r31,lo8(16)
+ 156 00d0 8F9F      		mul r24,r31
+ 157 00d2 900D      		add r25,r0
+ 158 00d4 1124      		clr __zero_reg__
+ 159 00d6 892F      		mov r24,r25
+ 160 00d8 0E94 0000 		call I2C_write
+ 161               	.LVL15:
+ 162               	/* epilogue start */
+  21:rtc.c         **** 	I2C_stop();
+  22:rtc.c         **** }
+ 163               		.loc 1 22 0
+ 164 00dc CF91      		pop r28
+ 165 00de 1F91      		pop r17
+ 166 00e0 0F91      		pop r16
+ 167               	.LVL16:
+  21:rtc.c         **** 	I2C_stop();
+ 168               		.loc 1 21 0
+ 169 00e2 0C94 0000 		jmp I2C_stop
+ 170               	.LVL17:
+ 171               		.cfi_endproc
+ 172               	.LFE1:
+ 174               	.global	rtc_get_date_time
+ 176               	rtc_get_date_time:
+ 177               	.LFB2:
+  23:rtc.c         **** void rtc_get_date_time(struct datetime *dt) {
+ 178               		.loc 1 23 0
+ 179               		.cfi_startproc
+ 180               	.LVL18:
+ 181 00e6 0F93      		push r16
+ 182               	.LCFI3:
+ 183               		.cfi_def_cfa_offset 3
+ 184               		.cfi_offset 16, -2
+ 185 00e8 1F93      		push r17
+ 186               	.LCFI4:
+ 187               		.cfi_def_cfa_offset 4
+ 188               		.cfi_offset 17, -3
+ 189 00ea CF93      		push r28
+ 190               	.LCFI5:
+ 191               		.cfi_def_cfa_offset 5
+ 192               		.cfi_offset 28, -4
+ 193 00ec DF93      		push r29
+ 194               	.LCFI6:
+ 195               		.cfi_def_cfa_offset 6
+ 196               		.cfi_offset 29, -5
+ 197 00ee 1F92      		push __zero_reg__
+ 198               	.LCFI7:
+ 199               		.cfi_def_cfa_offset 7
+ 200 00f0 CDB7      		in r28,__SP_L__
+ 201 00f2 DEB7      		in r29,__SP_H__
+ 202               	.LCFI8:
+ 203               		.cfi_def_cfa_register 28
+ 204               	/* prologue: function */
+ 205               	/* frame size = 1 */
+ 206               	/* stack size = 5 */
+ 207               	.L__stack_usage = 5
+ 208 00f4 8C01      		movw r16,r24
+  24:rtc.c         **** 	uint8_t v;
+  25:rtc.c         **** 	I2C_start();
+ 209               		.loc 1 25 0
+ 210 00f6 0E94 0000 		call I2C_start
+ 211               	.LVL19:
+  26:rtc.c         **** 	I2C_write(RTC_ADDR_W);
+ 212               		.loc 1 26 0
+ 213 00fa 82EA      		ldi r24,lo8(-94)
+ 214 00fc 0E94 0000 		call I2C_write
+ 215               	.LVL20:
+  27:rtc.c         **** 	I2C_write(RTC_SECOND);
+ 216               		.loc 1 27 0
+ 217 0100 82E0      		ldi r24,lo8(2)
+ 218 0102 0E94 0000 		call I2C_write
+ 219               	.LVL21:
+  28:rtc.c         **** 	I2C_start();
+ 220               		.loc 1 28 0
+ 221 0106 0E94 0000 		call I2C_start
+ 222               	.LVL22:
+  29:rtc.c         **** 	I2C_write(RTC_ADDR_R);
+ 223               		.loc 1 29 0
+ 224 010a 83EA      		ldi r24,lo8(-93)
+ 225 010c 0E94 0000 		call I2C_write
+ 226               	.LVL23:
+  30:rtc.c         **** 	I2C_read(&v, ACK);
+ 227               		.loc 1 30 0
+ 228 0110 61E0      		ldi r22,lo8(1)
+ 229 0112 CE01      		movw r24,r28
+ 230 0114 0196      		adiw r24,1
+ 231 0116 0E94 0000 		call I2C_read
+ 232               	.LVL24:
+  31:rtc.c         **** 	dt->sec = bcd2dec(v & 0b01111111);
+ 233               		.loc 1 31 0
+ 234 011a 8981      		ldd r24,Y+1
+ 235 011c 982F      		mov r25,r24
+ 236 011e 9695      		lsr r25
+ 237 0120 9695      		lsr r25
+ 238 0122 9695      		lsr r25
+ 239 0124 9E70      		andi r25,lo8(14)
+ 240 0126 292F      		mov r18,r25
+ 241 0128 220F      		lsl r18
+ 242 012a 220F      		lsl r18
+ 243 012c 920F      		add r25,r18
+ 244 012e 8F70      		andi r24,lo8(15)
+ 245 0130 890F      		add r24,r25
+ 246 0132 F801      		movw r30,r16
+ 247 0134 8283      		std Z+2,r24
+  32:rtc.c         **** 	I2C_read(&v, ACK);
+ 248               		.loc 1 32 0
+ 249 0136 61E0      		ldi r22,lo8(1)
+ 250 0138 CE01      		movw r24,r28
+ 251 013a 0196      		adiw r24,1
+ 252 013c 0E94 0000 		call I2C_read
+ 253               	.LVL25:
+  33:rtc.c         **** 	dt->min = bcd2dec(v & 0b01111111);
+ 254               		.loc 1 33 0
+ 255 0140 8981      		ldd r24,Y+1
+ 256 0142 982F      		mov r25,r24
+ 257 0144 9695      		lsr r25
+ 258 0146 9695      		lsr r25
+ 259 0148 9695      		lsr r25
+ 260 014a 9E70      		andi r25,lo8(14)
+ 261 014c 292F      		mov r18,r25
+ 262 014e 220F      		lsl r18
+ 263 0150 220F      		lsl r18
+ 264 0152 920F      		add r25,r18
+ 265 0154 8F70      		andi r24,lo8(15)
+ 266 0156 890F      		add r24,r25
+ 267 0158 F801      		movw r30,r16
+ 268 015a 8183      		std Z+1,r24
+  34:rtc.c         **** 	I2C_read(&v, ACK);
+ 269               		.loc 1 34 0
+ 270 015c 61E0      		ldi r22,lo8(1)
+ 271 015e CE01      		movw r24,r28
+ 272 0160 0196      		adiw r24,1
+ 273 0162 0E94 0000 		call I2C_read
+ 274               	.LVL26:
+  35:rtc.c         **** 	dt->hour = bcd2dec(v & 0b00111111);
+ 275               		.loc 1 35 0
+ 276 0166 8981      		ldd r24,Y+1
+ 277 0168 982F      		mov r25,r24
+ 278 016a 9695      		lsr r25
+ 279 016c 9695      		lsr r25
+ 280 016e 9695      		lsr r25
+ 281 0170 9670      		andi r25,lo8(6)
+ 282 0172 292F      		mov r18,r25
+ 283 0174 220F      		lsl r18
+ 284 0176 220F      		lsl r18
+ 285 0178 920F      		add r25,r18
+ 286 017a 8F70      		andi r24,lo8(15)
+ 287 017c 890F      		add r24,r25
+ 288 017e F801      		movw r30,r16
+ 289 0180 8083      		st Z,r24
+  36:rtc.c         **** 	I2C_read(&v, ACK);
+ 290               		.loc 1 36 0
+ 291 0182 61E0      		ldi r22,lo8(1)
+ 292 0184 CE01      		movw r24,r28
+ 293 0186 0196      		adiw r24,1
+ 294 0188 0E94 0000 		call I2C_read
+ 295               	.LVL27:
+  37:rtc.c         **** 	dt->day = bcd2dec(v & 0b00111111);
+ 296               		.loc 1 37 0
+ 297 018c 8981      		ldd r24,Y+1
+ 298 018e 982F      		mov r25,r24
+ 299 0190 9695      		lsr r25
+ 300 0192 9695      		lsr r25
+ 301 0194 9695      		lsr r25
+ 302 0196 9670      		andi r25,lo8(6)
+ 303 0198 292F      		mov r18,r25
+ 304 019a 220F      		lsl r18
+ 305 019c 220F      		lsl r18
+ 306 019e 920F      		add r25,r18
+ 307 01a0 8F70      		andi r24,lo8(15)
+ 308 01a2 890F      		add r24,r25
+ 309 01a4 F801      		movw r30,r16
+ 310 01a6 8383      		std Z+3,r24
+  38:rtc.c         **** 	I2C_read(&v, ACK);
+ 311               		.loc 1 38 0
+ 312 01a8 61E0      		ldi r22,lo8(1)
+ 313 01aa CE01      		movw r24,r28
+ 314 01ac 0196      		adiw r24,1
+ 315 01ae 0E94 0000 		call I2C_read
+ 316               	.LVL28:
+  39:rtc.c         **** 	dt->weekday = bcd2dec(v & 0b00000111);
+ 317               		.loc 1 39 0
+ 318 01b2 8981      		ldd r24,Y+1
+ 319 01b4 8770      		andi r24,lo8(7)
+ 320 01b6 F801      		movw r30,r16
+ 321 01b8 8483      		std Z+4,r24
+  40:rtc.c         **** 	I2C_read(&v, ACK);
+ 322               		.loc 1 40 0
+ 323 01ba 61E0      		ldi r22,lo8(1)
+ 324 01bc CE01      		movw r24,r28
+ 325 01be 0196      		adiw r24,1
+ 326 01c0 0E94 0000 		call I2C_read
+ 327               	.LVL29:
+  41:rtc.c         **** 	dt->month = bcd2dec(v & 0b00011111);
+ 328               		.loc 1 41 0
+ 329 01c4 8981      		ldd r24,Y+1
+ 330 01c6 982F      		mov r25,r24
+ 331 01c8 9695      		lsr r25
+ 332 01ca 9695      		lsr r25
+ 333 01cc 9695      		lsr r25
+ 334 01ce 9270      		andi r25,lo8(2)
+ 335 01d0 292F      		mov r18,r25
+ 336 01d2 220F      		lsl r18
+ 337 01d4 220F      		lsl r18
+ 338 01d6 920F      		add r25,r18
+ 339 01d8 8F70      		andi r24,lo8(15)
+ 340 01da 890F      		add r24,r25
+ 341 01dc F801      		movw r30,r16
+ 342 01de 8583      		std Z+5,r24
+  42:rtc.c         **** 	I2C_read(&v, ACK);
+ 343               		.loc 1 42 0
+ 344 01e0 61E0      		ldi r22,lo8(1)
+ 345 01e2 CE01      		movw r24,r28
+ 346 01e4 0196      		adiw r24,1
+ 347 01e6 0E94 0000 		call I2C_read
+ 348               	.LVL30:
+  43:rtc.c         **** 	dt->year = bcd2dec(v);
+ 349               		.loc 1 43 0
+ 350 01ea 8981      		ldd r24,Y+1
+ 351 01ec 982F      		mov r25,r24
+ 352 01ee 9295      		swap r25
+ 353 01f0 9F70      		andi r25,lo8(15)
+ 354 01f2 8F70      		andi r24,lo8(15)
+ 355 01f4 FAE0      		ldi r31,lo8(10)
+ 356 01f6 9F9F      		mul r25,r31
+ 357 01f8 800D      		add r24,r0
+ 358 01fa 1124      		clr __zero_reg__
+ 359 01fc F801      		movw r30,r16
+ 360 01fe 8683      		std Z+6,r24
+  44:rtc.c         **** 	I2C_stop();
+ 361               		.loc 1 44 0
+ 362 0200 0E94 0000 		call I2C_stop
+ 363               	.LVL31:
+ 364               	/* epilogue start */
+  45:rtc.c         **** }
+ 365               		.loc 1 45 0
+ 366 0204 0F90      		pop __tmp_reg__
+ 367 0206 DF91      		pop r29
+ 368 0208 CF91      		pop r28
+ 369 020a 1F91      		pop r17
+ 370 020c 0F91      		pop r16
+ 371               	.LVL32:
+ 372 020e 0895      		ret
+ 373               		.cfi_endproc
+ 374               	.LFE2:
+ 376               	.Letext0:
+ 377               		.file 2 "rtc.h"
+ 378               		.file 3 "twi.h"
+ 379               		.file 4 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 rtc.c
+     /tmp/ccTlxoCJ.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccTlxoCJ.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccTlxoCJ.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccTlxoCJ.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccTlxoCJ.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccTlxoCJ.s:12     .text:0000000000000000 rtc_init
+     /tmp/ccTlxoCJ.s:44     .text:000000000000001a rtc_set_date_time
+     /tmp/ccTlxoCJ.s:176    .text:00000000000000e6 rtc_get_date_time
+
+UNDEFINED SYMBOLS
+I2C_start
+I2C_write
+I2C_stop
+__udivmodqi4
+I2C_read
